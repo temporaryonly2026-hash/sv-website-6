@@ -2965,14 +2965,15 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
     return 0.299*r + 0.587*g + 0.114*b;
   }
   Object.keys(schemes).forEach(function(id){
-    $("#"+id).addEventListener("click", function(){ applyScheme(schemes[id]); markUnsaved(); updateEmbedScriptPreview(); });
+    $("#"+id).addEventListener("click", function(){ applyScheme(schemes[id], id); markUnsaved(); updateEmbedScriptPreview(); });
   });
-  function applyScheme(s){
+  function applyScheme(s, schemeId){
     document.documentElement.style.setProperty("--ez-solace-bg", s.bg);
     document.documentElement.style.setProperty("--ez-solace-surface", s.surface);
     document.documentElement.style.setProperty("--ez-solace-ink", s.ink);
     document.documentElement.style.setProperty("--ez-solace-accent", s.accent);
     document.documentElement.style.setProperty("--ez-solace-line", s.line);
+    document.documentElement.setAttribute("data-ez-color-scheme", schemeId || "");
     var st=document.getElementById("ez-solace-scheme-style");
     if(!st){ st=document.createElement("style"); st.id="ez-solace-scheme-style"; document.head.appendChild(st); }
     var bg=s.bg, surface=s.surface, ink=s.ink, accent=s.accent, line=s.line;
@@ -2991,6 +2992,27 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       .hover\\:border-copper:hover{border-color:${accent}!important}
       .text-espresso-950{color:${accentInk}!important;}
       svg.fill-copper{fill:${accent}!important;stroke:none!important;}
+
+      /* Ivory Sage accessibility refinements:
+         keep controls/panels light and preserve white text on image overlays. */
+      html[data-ez-color-scheme="scheme2"] .bg-espresso-900\\/80{
+        background-color:rgba(255,255,255,.92)!important;
+        color:#1C1B18!important;
+        border-color:rgba(28,27,24,.14)!important;
+      }
+      html[data-ez-color-scheme="scheme2"] .bg-espresso-700{
+        background-color:#EFE9DE!important;
+        color:#1C1B18!important;
+      }
+      html[data-ez-color-scheme="scheme2"] .bg-espresso-950\\/70{
+        background-color:rgba(255,255,255,.94)!important;
+        color:#1C1B18!important;
+        border-color:rgba(28,27,24,.14)!important;
+      }
+      html[data-ez-color-scheme="scheme2"] #origin-grid .text-copper,
+      html[data-ez-color-scheme="scheme2"] #origin-grid .text-cream-50{
+        color:#FFFFFF!important;
+      }
     `;
   }
 
@@ -3608,6 +3630,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       headingFont: $("#fHeading").value,
       bodyFont: $("#fBody").value,
       customEffects: cloneCustomEffects(customEffects),
+      colorScheme: document.documentElement.getAttribute("data-ez-color-scheme") || "scheme0",
       // Keep the legacy field synchronized so older versions can still read
       // the saved settings without losing the user's effects.
       customCode: customEffectsCode(customEffects),
@@ -3621,6 +3644,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
     if(s.footerHTML){ restoreRegion(document.querySelector(".site-footer, #footer0001"), s.footerHTML); }
 
     if(s.cssVars){ Object.keys(s.cssVars).forEach(function(k){ if(s.cssVars[k]) document.documentElement.style.setProperty(k, s.cssVars[k]); }); }
+    if(s.colorScheme && schemes[s.colorScheme]){ applyScheme(schemes[s.colorScheme], s.colorScheme); }
     if(s.headingFont){ $("#fHeading").value = s.headingFont; loadGoogleFont(s.headingFont); }
     if(s.bodyFont){ $("#fBody").value = s.bodyFont; loadGoogleFont(s.bodyFont); }
     customEffects = normalizeCustomEffects(s);
