@@ -522,7 +522,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 <div class="absolute inset-0 bg-gradient-to-t from-espresso-950 via-espresso-950/20 to-transparent" id="container0025"></div>
 <!-- Overlay Badge 1 -->
 <div class="absolute bottom-6 left-6 right-6 p-4 rounded-xl glass-dark border border-copper/20 flex items-center gap-4" id="container0026">
-<div class="w-12 h-12 rounded-lg bg-copper/20 border border-copper/40 flex items-center justify-center shrink-0" id="container0027">
+<div class="w-12 h-12 rounded-lg bg-copper/10 border border-copper/30 flex items-center justify-center shrink-0" id="container0027">
 <i class="w-6 h-6 text-copper" data-lucide="flame" id="icon0006"></i>
 </div>
 <div id="container0028">
@@ -533,8 +533,8 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 </div>
 <!-- Floating Micro Card -->
 <div class="absolute -top-6 -left-6 hidden sm:flex items-center gap-3 p-3.5 rounded-xl glass-card border border-copper/30 shadow-2xl animate-float" style="animation-delay: -2s;" id="container0029">
-<div class="w-10 h-10 rounded-full bg-cream-100 flex items-center justify-center" id="container0030">
-<i class="w-5 h-5 text-espresso-950" data-lucide="award" id="icon0007"></i>
+<div class="w-10 h-10 rounded-full bg-copper/10 border border-copper/30 flex items-center justify-center text-copper" id="container0030">
+<i class="w-5 h-5 text-copper" data-lucide="award" id="icon0007"></i>
 </div>
 <div id="container0031">
 <p class="text-xs font-bold text-cream-50" id="text0016">Curated &amp; Practical</p>
@@ -3103,7 +3103,6 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
     document.documentElement.style.setProperty("--ez-solace-accent", s.accent);
     document.documentElement.style.setProperty("--ez-solace-line", s.line);
     document.documentElement.setAttribute("data-ez-color-scheme", schemeId || "");
-    if(window.applyIvorySageDirectOverrides) window.applyIvorySageDirectOverrides();
     var st=document.getElementById("ez-solace-scheme-style");
     if(!st){ st=document.createElement("style"); st.id="ez-solace-scheme-style"; document.head.appendChild(st); }
     var bg=s.bg, surface=s.surface, ink=s.ink, accent=s.accent, line=s.line;
@@ -3128,7 +3127,6 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       #navbar{border-bottom-color:${line}!important}
       .hover\\:text-copper:hover{color:${accent}!important}
       .hover\\:border-copper:hover{border-color:${accent}!important}
-      .text-espresso-950{color:${accentInk}!important;}
       svg.fill-copper{fill:${accent}!important;stroke:none!important;}
 
       /* Consistent icon-display treatment across every color scheme. */
@@ -3162,10 +3160,6 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       html[data-ez-color-scheme="scheme2"] #origin-grid .text-copper,
       html[data-ez-color-scheme="scheme2"] #origin-grid .text-cream-50{
         color:#FFFFFF!important;
-      }
-      html[data-ez-color-scheme="scheme2"] #container0027,
-      html[data-ez-color-scheme="scheme2"] #container0051{
-        border-color:rgba(28,27,24,.14)!important;
       }
       html[data-ez-color-scheme="scheme2"] #container0051 #icon0009{
         color:#2F5D50!important;
@@ -3913,6 +3907,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
     try{
       localStorage.removeItem(LS_DRAFT);
       localStorage.removeItem(LS_SETTINGS);
+      localStorage.removeItem(LS_COLOR_SCHEME);
     }catch(e){}
     location.href = location.pathname;
   });
