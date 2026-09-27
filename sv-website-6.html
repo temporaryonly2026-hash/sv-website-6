@@ -796,17 +796,20 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 </div>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="container0089">
-
-<div class="sm:col-span-2" id="container0090">
-<label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="element0007">Subject *</label>
+<div id="container0090">
+<label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="element0007">Phone</label>
+<input class="w-full bg-espresso-950 border border-copper/20 rounded-lg px-4 py-3 text-sm text-cream-100 placeholder-cream-400/40 focus:outline-none focus:border-copper transition-colors" id="contact-phone" placeholder="+1 (555) 123-4567" type="tel"/>
+</div>
+<div id="container0091">
+<label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="element0008">Subject *</label>
 <input class="w-full bg-espresso-950 border border-copper/20 rounded-lg px-4 py-3 text-sm text-cream-100 placeholder-cream-400/40 focus:outline-none focus:border-copper transition-colors" id="contact-subject" placeholder="Question about a digital product" required="" type="text"/>
 </div>
 </div>
-<div id="container0091">
-<label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="element0008">Your Message *</label>
+<div id="container0092">
+<label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="element0009">Your Message *</label>
 <textarea class="w-full bg-espresso-950 border border-copper/20 rounded-lg px-4 py-3 text-sm text-cream-100 placeholder-cream-400/40 focus:outline-none focus:border-copper transition-colors" id="contact-message" placeholder="How can we help you choose the right resource?" required="" rows="4"></textarea>
 </div>
-<button class="w-full py-4 bg-copper hover:bg-copper-light text-espresso-950 font-semibold rounded-xl tracking-wider uppercase text-xs transition-all shadow-glow flex items-center justify-center gap-2" id="button0009" type="submit">
+<button class="w-full py-4 bg-copper hover:bg-copper-light text-espresso-950 font-semibold rounded-xl tracking-wider uppercase text-xs transition-all shadow-glow flex items-center justify-center gap-2" id="button0009" type="submit" data-gmail-inquiry="true">
 <span id="text0053">Send Inquiry</span>
 <i class="w-4 h-4" data-lucide="send" id="icon0018"></i>
 </button>
@@ -1583,10 +1586,77 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
             if (window.location.hash === '#terms-of-service') openLegalPage('terms');
             if (window.location.hash === '#digital-product-terms') openLegalPage('digital-products');
 
+            window.openGmailInquiry = function(form) {
+                if (!form) return false;
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return false;
+                }
+
+                const ownerEmailField = document.getElementById('cpOwnerEmail');
+                const ownerEmail =
+                    (ownerEmailField && ownerEmailField.value.trim()) ||
+                    (window.OWNER_EMAIL || window.CONTACT_EMAIL || window.SITE_OWNER_EMAIL || '').trim();
+
+                const name = (document.getElementById('contact-name')?.value || '').trim();
+                const email = (document.getElementById('contact-email')?.value || '').trim();
+                const phone = (document.getElementById('contact-phone')?.value || '').trim() || 'Not Provided';
+                const subject = (document.getElementById('contact-subject')?.value || '').trim();
+                const message = (document.getElementById('contact-message')?.value || '').trim();
+
+                if (!ownerEmail) {
+                    showToast('Please configure the Owners Email (for inquiries) in the Customize Panel.');
+                    return false;
+                }
+
+                const emailCheck = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailCheck.test(email)) {
+                    const emailField = document.getElementById('contact-email');
+                    if (emailField) {
+                        emailField.setCustomValidity('Please enter a valid email address.');
+                        emailField.reportValidity();
+                        setTimeout(() => emailField.setCustomValidity(''), 0);
+                    }
+                    return false;
+                }
+
+                if (!subject || !message) {
+                    form.reportValidity();
+                    return false;
+                }
+
+                const body = [
+                    'Name: ' + name,
+                    'Email: ' + email,
+                    'Phone: ' + phone,
+                    'Message:',
+                    message,
+                    '',
+                    'Sent to: ' + ownerEmail
+                ].join('\n');
+
+                const gmailUrl = new URL('https://mail.google.com/mail/');
+                gmailUrl.searchParams.set('view', 'cm');
+                gmailUrl.searchParams.set('fs', '1');
+                gmailUrl.searchParams.set('to', ownerEmail);
+                gmailUrl.searchParams.set('su', subject);
+                gmailUrl.searchParams.set('body', body);
+
+                const newTab = window.open(gmailUrl.toString(), '_blank');
+                if (!newTab) {
+                    window.location.href = gmailUrl.toString();
+                    return true;
+                }
+
+                form.reset();
+                showToast('Gmail Compose opened in a new tab.');
+                return true;
+            };
+
             document.getElementById('contact-form').addEventListener('submit', (e) => {
                 e.preventDefault();
-                showToast('Thank you! Your inquiry has been received.');
-                e.target.reset();
+                window.openGmailInquiry(e.currentTarget);
             });
         });
     </script>
@@ -3559,9 +3629,15 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 
   // Owner Email: auto-detect from the existing "Prefer email?" mailto link
   // on first load, then keep everything in sync going forward.
+  function getConfiguredOwnerEmail(){
+    var field = document.getElementById("cpOwnerEmail");
+    var value = field ? field.value.trim() : "";
+    if(value) return value;
+    return String(window.OWNER_EMAIL || window.CONTACT_EMAIL || window.SITE_OWNER_EMAIL || "").trim();
+  }
+  window.getOwnerEmail = getConfiguredOwnerEmail;
+
   function syncOwnerEmailDisplays(email){
-    var emailField = document.getElementById("contact-email");
-    if(emailField && email) emailField.value = email;
     document.querySelectorAll("[data-owner-email]").forEach(function(el){ el.textContent = email; });
   }
   var ownerEmailInput = $("#cpOwnerEmail");
@@ -3763,7 +3839,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
     // Auto-detect the existing owner email from the "Prefer email?" link so
     // the panel field starts in sync with whatever the page already shows.
     if(ownerEmailInput && !ownerEmailInput.value.trim()){
-      ownerEmailInput.value = window.getOwnerEmail ? window.getOwnerEmail() : "";
+      ownerEmailInput.value = getConfiguredOwnerEmail();
     }
     // Settings can arrive from the embed snippet itself (#p= / #data= / ?data=),
     // which is how the customization travels to Systeme.io / GHL / ClickFunnels.
