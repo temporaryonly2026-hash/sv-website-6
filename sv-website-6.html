@@ -1185,6 +1185,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
                 grid.appendChild(card);
             });
             lucide.createIcons();
+            if (document.documentElement.getAttribute("data-ez-color-scheme") === "scheme2" && window.applyIvorySageDirectOverrides) window.applyIvorySageDirectOverrides();
         }
 
         function renderRoastProfile(key = 'light') {
@@ -1264,6 +1265,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
             `;
             lucide.createIcons();
             window.__assignRuntimeIds?.();
+            if (document.documentElement.getAttribute("data-ez-color-scheme") === "scheme2" && window.applyIvorySageDirectOverrides) window.applyIvorySageDirectOverrides();
         }
 
         function renderOrigins() {
@@ -1302,6 +1304,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
                 originContainer.appendChild(card);
             });
             window.__assignRuntimeIds?.(originContainer);
+            if (document.documentElement.getAttribute("data-ez-color-scheme") === "scheme2" && window.applyIvorySageDirectOverrides) window.applyIvorySageDirectOverrides();
         }
 
         function renderReviews() {
@@ -1979,6 +1982,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
   "use strict";
   var LS_SETTINGS = "ez_customizer_settings";
   var LS_DRAFT = "ez_customizer_draft";
+  var LS_COLOR_SCHEME = "ez_color_scheme";
   var LS_HISTORY = "ez_customizer_history";
   var root = document.getElementById("main") ? document : document; // whole doc is in scope
   var body = document.body;
@@ -2966,11 +2970,94 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
   }
   function persistSelectedColorScheme(){
     try{
+      var selected = document.documentElement.getAttribute("data-ez-color-scheme") || "scheme0";
+      localStorage.setItem(LS_COLOR_SCHEME, selected);
+
       var settings = collectSettings();
+      settings.colorScheme = selected;
       localStorage.setItem(LS_SETTINGS, JSON.stringify(settings));
       localStorage.setItem(LS_DRAFT, JSON.stringify(settings));
     }catch(e){}
   }
+
+  function clearInlineStyle(el, prop){
+    if(el && el.style) el.style.removeProperty(prop);
+  }
+
+  function setImportantStyle(el, prop, value){
+    if(el && el.style) el.style.setProperty(prop, value, "important");
+  }
+
+  function applyIvorySageDirectOverrides(){
+    var ivory = document.documentElement.getAttribute("data-ez-color-scheme") === "scheme2";
+    var darkGreen = "#2F5D50";
+    var lightPanel = "#FFFFFF";
+    var lightBadge = "#F7F4EE";
+    var darkInk = "#1C1B18";
+
+    var exact = [
+      document.getElementById("container0027"),
+      document.getElementById("container0051")
+    ];
+
+    if(ivory){
+      exact.forEach(function(el){
+        setImportantStyle(el, "border-color", darkGreen);
+      });
+
+      setImportantStyle(document.getElementById("icon0006"), "color", darkGreen);
+      setImportantStyle(document.getElementById("icon0009"), "color", darkGreen);
+      setImportantStyle(document.getElementById("icon0009"), "stroke", darkGreen);
+
+      document.querySelectorAll("#product-grid .absolute.top-3.left-3").forEach(function(el){
+        setImportantStyle(el, "background-color", lightBadge);
+        setImportantStyle(el, "color", darkGreen);
+        setImportantStyle(el, "border-color", "rgba(28,27,24,.14)");
+      });
+
+      document.querySelectorAll("#product-grid .group\/btn").forEach(function(el){
+        setImportantStyle(el, "background-color", lightBadge);
+        setImportantStyle(el, "color", darkInk);
+      });
+      document.querySelectorAll("#product-grid .group\/btn svg").forEach(function(el){
+        setImportantStyle(el, "color", darkGreen);
+        setImportantStyle(el, "stroke", darkGreen);
+      });
+
+      var formatPanel = document.getElementById("roast-display-panel");
+      if(formatPanel){
+        var recommended = formatPanel.querySelector(".lg\\:col-span-5.bg-espresso-950\\/70") ||
+                          formatPanel.querySelector(".bg-espresso-950\\/70");
+        if(!recommended) recommended = formatPanel.querySelector("[class*='bg-espresso-950/70']");
+        if(recommended){
+          setImportantStyle(recommended, "background-color", lightPanel);
+          setImportantStyle(recommended, "color", darkInk);
+          setImportantStyle(recommended, "border-color", "rgba(28,27,24,.14)");
+        }
+        if(formatPanel){
+          formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] strong, [class*='bg-espresso-950/70'] h4").forEach(function(el){
+            setImportantStyle(el, "color", darkInk);
+          });
+          formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] > div").forEach(function(row){
+            setImportantStyle(row, "color", darkInk);
+          });
+          formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] svg").forEach(function(svg){
+            setImportantStyle(svg, "color", darkGreen);
+            setImportantStyle(svg, "stroke", darkGreen);
+          });
+          formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] strong").forEach(function(strong){
+            setImportantStyle(strong, "color", darkGreen);
+          });
+        }
+      }
+
+      document.querySelectorAll("#origin-grid .text-copper, #origin-grid .text-cream-50").forEach(function(el){
+        setImportantStyle(el, "color", "#FFFFFF");
+      });
+    }
+  }
+
+  window.applyIvorySageDirectOverrides = applyIvorySageDirectOverrides;
 
   Object.keys(schemes).forEach(function(id){
     $("#"+id).addEventListener("click", function(){
@@ -3036,6 +3123,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
         stroke:#2F5D50!important;
       }
     `;
+    applyIvorySageDirectOverrides();
   }
 
   // ============================================================
@@ -3909,10 +3997,15 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
     // which is how the customization travels to Systeme.io / GHL / ClickFunnels.
     var urlSettings = readUrlSettings();
     var saved = null, draft = null;
+    var rememberedColorScheme = null;
+    try{ rememberedColorScheme = localStorage.getItem(LS_COLOR_SCHEME); }catch(e){}
     try{ saved = JSON.parse(localStorage.getItem(LS_SETTINGS) || "null"); }catch(e){}
     try{ draft = JSON.parse(localStorage.getItem(LS_DRAFT) || "null"); }catch(e){}
     if(urlSettings){
       applySettings(urlSettings);
+      if(!urlSettings.colorScheme && rememberedColorScheme && schemes[rememberedColorScheme]){
+        applyScheme(schemes[rememberedColorScheme], rememberedColorScheme);
+      }
     } else if(draft && !viewOnly){
       if(confirm("May nakita kaming hindi pa na-save na draft. I-resume ang draft na ito?")){
         applySettings(draft); unsaved = true; unsavedPill.style.display = "block";
@@ -3922,7 +4015,14 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       }
     } else if(saved){
       applySettings(saved);
+      if(!saved.colorScheme && rememberedColorScheme && schemes[rememberedColorScheme]){
+        applyScheme(schemes[rememberedColorScheme], rememberedColorScheme);
+      }
+    } else if(rememberedColorScheme && schemes[rememberedColorScheme]){
+      applyScheme(schemes[rememberedColorScheme], rememberedColorScheme);
     }
+
+    applyIvorySageDirectOverrides();
 
     if(window.ensureInquiryPhoneField){ window.ensureInquiryPhoneField(); }
     ensurePageElementIds();
