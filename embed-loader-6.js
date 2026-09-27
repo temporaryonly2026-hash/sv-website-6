@@ -9,7 +9,12 @@
   }
   var scriptSrc = (thisScript && thisScript.src) || '';
   var origin = '';
-  try { origin = new URL(scriptSrc, window.location.href).origin; } catch(e) {}
+  var scriptBase = '';
+  try {
+    var scriptUrl = new URL(scriptSrc, window.location.href);
+    origin = scriptUrl.origin;
+    scriptBase = new URL('.', scriptUrl.href).href;
+  } catch(e) {}
 
   var qIndex = scriptSrc.indexOf('?');
   var hIndex = scriptSrc.indexOf('#');
@@ -28,12 +33,15 @@
     hashParams.get('file') ||
     (thisScript && thisScript.getAttribute('data-file')) || '';
 
+  var dataPage = (thisScript && thisScript.getAttribute('data-page')) || '';
+  var explicitPage = params.get('page') || hashParams.get('page') || '';
+
   var pageUrl =
-    params.get('page') ||
-    hashParams.get('page') ||
-    (thisScript && thisScript.getAttribute('data-page')) ||
-    (origin && fileName ? origin + '/' + fileName.replace(/^\//,'') : '') ||
-    (origin ? origin + '/sv-website-6.html' : '');
+    explicitPage ||
+    (/^https?:\/\//i.test(dataPage) ? dataPage : '') ||
+    (fileName ? new URL(fileName.replace(/^\/+/, ''), scriptBase || origin + '/').href : '') ||
+    (dataPage ? new URL(dataPage.replace(/^\/+/, ''), scriptBase || origin + '/').href : '') ||
+    (scriptBase ? new URL('sv-website-6.html', scriptBase).href : '');
 
   if(!pageUrl){
     console.error('embed-loader.js: could not resolve the page URL.');
