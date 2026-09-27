@@ -796,8 +796,8 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 </div>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="container0089">
-<div id="container0090">
-<label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="element0007">Phone</label>
+<div id="contact-phone-field">
+<label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="contact-phone-label">Phone</label>
 <input class="w-full bg-espresso-950 border border-copper/20 rounded-lg px-4 py-3 text-sm text-cream-100 placeholder-cream-400/40 focus:outline-none focus:border-copper transition-colors" id="contact-phone" placeholder="+1 (555) 123-4567" type="tel"/>
 </div>
 <div id="container0091">
@@ -805,8 +805,8 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 <input class="w-full bg-espresso-950 border border-copper/20 rounded-lg px-4 py-3 text-sm text-cream-100 placeholder-cream-400/40 focus:outline-none focus:border-copper transition-colors" id="contact-subject" placeholder="Question about a digital product" required="" type="text"/>
 </div>
 </div>
-<div id="container0092">
-<label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="element0009">Your Message *</label>
+<div id="container0091">
+<label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="element0008">Your Message *</label>
 <textarea class="w-full bg-espresso-950 border border-copper/20 rounded-lg px-4 py-3 text-sm text-cream-100 placeholder-cream-400/40 focus:outline-none focus:border-copper transition-colors" id="contact-message" placeholder="How can we help you choose the right resource?" required="" rows="4"></textarea>
 </div>
 <button class="w-full py-4 bg-copper hover:bg-copper-light text-espresso-950 font-semibold rounded-xl tracking-wider uppercase text-xs transition-all shadow-glow flex items-center justify-center gap-2" id="button0009" type="submit" data-gmail-inquiry="true">
@@ -1585,6 +1585,24 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
             if (window.location.hash === '#privacy-policy') openLegalPage('privacy');
             if (window.location.hash === '#terms-of-service') openLegalPage('terms');
             if (window.location.hash === '#digital-product-terms') openLegalPage('digital-products');
+
+            window.ensureInquiryPhoneField = function() {
+                const form = document.getElementById('contact-form');
+                if (!form || document.getElementById('contact-phone')) return;
+
+                const subject = document.getElementById('contact-subject');
+                const subjectGroup = subject && subject.parentElement;
+                if (!subjectGroup || !subjectGroup.parentElement) return;
+
+                const phoneGroup = document.createElement('div');
+                phoneGroup.className = subjectGroup.className || '';
+                phoneGroup.id = 'contact-phone-field';
+                phoneGroup.innerHTML = `
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-cream-300 mb-2" id="contact-phone-label">Phone</label>
+                    <input class="w-full bg-espresso-950 border border-copper/20 rounded-lg px-4 py-3 text-sm text-cream-100 placeholder-cream-400/40 focus:outline-none focus:border-copper transition-colors" id="contact-phone" placeholder="+1 (555) 123-4567" type="tel"/>
+                `;
+                subjectGroup.parentElement.insertBefore(phoneGroup, subjectGroup);
+            };
 
             window.openGmailInquiry = function(form) {
                 if (!form) return false;
@@ -3859,6 +3877,11 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
     } else if(saved){
       applySettings(saved);
     }
+
+    if(window.ensureInquiryPhoneField){ window.ensureInquiryPhoneField(); }
+    ensurePageElementIds();
+    ensureSolaceEditorTargets();
+    if(typeof markAuthored === "function"){ markAuthored(document.getElementById("main")); }
 
     pushHistory();
     updateEmbedScriptPreview();
