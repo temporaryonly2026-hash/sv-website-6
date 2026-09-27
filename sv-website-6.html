@@ -2752,6 +2752,57 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     return tag === "svg" || (tag === "i" && el.hasAttribute("data-lucide"));
   }
 
+  function sanitizeSvgNode(svg){
+    if(!svg || svg.nodeType !== 1 || svg.tagName.toLowerCase() !== "svg") return null;
+    $all("script", svg).forEach(function(el){ el.remove(); });
+    $all("*", svg).forEach(function(el){
+      Array.prototype.slice.call(el.attributes || []).forEach(function(attr){
+        var name = attr.name.toLowerCase();
+        var value = attr.value || "";
+        if(name.indexOf("on") === 0) el.removeAttribute(attr.name);
+        if((name === "href" || name === "xlink:href") && /^javascript:/i.test(value)) el.removeAttribute(attr.name);
+      });
+    });
+    return svg;
+  }
+
+  function parseSvgString(source){
+    source = String(source || "").trim();
+    if(!source) return null;
+    try{
+      var doc = new DOMParser().parseFromString(source, "image/svg+xml");
+      var svg = doc.documentElement;
+      if(!svg || svg.tagName.toLowerCase() !== "svg") return null;
+      return sanitizeSvgNode(svg);
+    }catch(err){
+      return null;
+    }
+  }
+
+  function replaceSelectedSvg(svgSource){
+    var oldIcon = isReplaceableIcon(selectedFrame) ? selectedFrame : null;
+    if(!oldIcon) return false;
+
+    var parsed = parseSvgString(svgSource);
+    if(!parsed) return false;
+
+    var newIcon = document.importNode(parsed, true);
+    var oldId = oldIcon.id;
+    var oldClasses = Array.prototype.slice.call(oldIcon.classList || []);
+    var incomingClasses = Array.prototype.slice.call(newIcon.classList || []);
+    oldClasses.forEach(function(cls){
+      if(incomingClasses.indexOf(cls) === -1) newIcon.classList.add(cls);
+    });
+    if(oldId) newIcon.id = oldId;
+    newIcon.setAttribute("data-ez-replaced-icon", "true");
+    oldIcon.parentNode.replaceChild(newIcon, oldIcon);
+    selectedFrame = newIcon;
+    selectFrame(newIcon);
+    pushHistory();
+    markUnsaved();
+    return true;
+  }
+
   function currentMediaTarget(){
     if(!selectedFrame) return null;
     return selectedFrame.querySelector("img,video,iframe") || selectedFrame;
@@ -2857,6 +2908,21 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     // The click router selects the most specific element, so clicking a photo
     // selects the <img> itself — swap its src directly instead of painting a
     // background on it (which would never show).
+    if(selectedFrame.tagName === "SVG"){
+      // Media is the single source of truth for both SVG and image replacement.
+      // If an image is uploaded/linked while an SVG icon is selected, replace
+      // the icon with an <img> while keeping its id/classes for future edits.
+      var replacementImg = document.createElement("img");
+      replacementImg.src = src;
+      Array.prototype.forEach.call(selectedFrame.classList || [], function(cls){ replacementImg.classList.add(cls); });
+      replacementImg.id = selectedFrame.id || "";
+      replacementImg.alt = "Uploaded media";
+      replacementImg.setAttribute("data-ez-replaced-icon", "image");
+      selectedFrame.parentNode.replaceChild(replacementImg, selectedFrame);
+      selectedFrame = replacementImg;
+      pushHistory(); markUnsaved();
+      return;
+    }
     if(selectedFrame.tagName === "IMG"){
       selectedFrame.src = src;
       selectedFrame.removeAttribute("srcset");
