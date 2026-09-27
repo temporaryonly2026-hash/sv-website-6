@@ -374,6 +374,8 @@ body:not(.ez-edit-on) .item-actions{display:none !important;}
   #ezCustomCodeModal .effect-code{min-height:160px;}
 }
 
+#hero.ez-hero-parallax-proxy{transform:none!important;}
+#heroParallaxLayer{transform-origin:center center;}
 body.ez-view-only #customizePanel, body.ez-view-only #ezMiniToolbar,
 body.ez-view-only #ezFrameToolbar, body.ez-view-only #ezStylePanel, body.ez-view-only #ezUnsavedPill,
 body.ez-view-only #ezAttrInspector, body.ez-view-only #ezIdListPanel,
@@ -3793,6 +3795,88 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 
 </script>
 
+<script id="ez-solace-hero-parallax-compat">
+(function(){
+  "use strict";
+
+  // Keep the Hero content stable when a custom parallax effect targets #hero.
+  // The external effect's transform is mirrored onto a dedicated background layer
+  // while #hero itself remains the stable layout container.
+  var heroParallaxObserver = null;
+  var heroParallaxRaf = 0;
+
+  function ensureHeroParallaxLayer(){
+    var hero = document.getElementById("hero");
+    if(!hero) return null;
+
+    var layer = document.getElementById("heroParallaxLayer");
+    if(layer && layer.parentNode === hero) return layer;
+
+    layer = document.createElement("div");
+    layer.id = "heroParallaxLayer";
+    layer.className = "absolute inset-0 pointer-events-none";
+
+    var contentRoot = document.getElementById("container0013");
+    var directChildren = Array.prototype.slice.call(hero.children);
+    directChildren.forEach(function(el){
+      if(el !== contentRoot) layer.appendChild(el);
+    });
+
+    hero.insertBefore(layer, contentRoot || hero.firstChild || null);
+    return layer;
+  }
+
+  function syncHeroParallax(){
+    var hero = document.getElementById("hero");
+    var layer = ensureHeroParallaxLayer();
+    if(!hero || !layer) return;
+
+    var transform = hero.style.getPropertyValue("transform").trim();
+    var origin = hero.style.getPropertyValue("transform-origin").trim();
+
+    if(transform && transform !== "none"){
+      layer.style.transform = transform;
+      layer.style.transformOrigin = origin || "center center";
+      hero.classList.add("ez-hero-parallax-proxy");
+    } else {
+      layer.style.transform = "";
+      layer.style.transformOrigin = "";
+      hero.classList.remove("ez-hero-parallax-proxy");
+    }
+
+    heroParallaxRaf = requestAnimationFrame(syncHeroParallax);
+  }
+
+  function startHeroParallaxProxy(){
+    var hero = document.getElementById("hero");
+    if(!hero) return;
+
+    ensureHeroParallaxLayer();
+
+    if(!heroParallaxObserver){
+      heroParallaxObserver = new MutationObserver(function(){
+        syncHeroParallax();
+      });
+      heroParallaxObserver.observe(hero, { attributes:true, attributeFilter:["style"] });
+    }
+
+    if(!heroParallaxRaf) heroParallaxRaf = requestAnimationFrame(syncHeroParallax);
+  }
+
+  window.__ezStartHeroParallaxProxy = startHeroParallaxProxy;
+  window.__ezResetHeroParallaxProxy = function(){
+    var hero = document.getElementById("hero");
+    var layer = document.getElementById("heroParallaxLayer");
+    if(hero) hero.classList.remove("ez-hero-parallax-proxy");
+    if(layer){
+      layer.style.transform = "";
+      layer.style.transformOrigin = "";
+    }
+  };
+
+  startHeroParallaxProxy();
+})();
+</script>
 <script id="ez-solace-panel-bridge">
 /* Bridge for the copied panel: keep Solace legal-page functions addressable by the editor. */
 window.addEventListener('load', function(){
