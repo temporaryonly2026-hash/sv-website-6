@@ -465,10 +465,13 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 </nav>
 <main id="main">
 <section class="relative min-h-screen pt-32 pb-20 md:pt-40 md:pb-28 flex items-center justify-center overflow-hidden" id="hero">
+<!-- Parallax-safe background layer: external effects targeting #hero are proxied here. -->
+<div class="absolute inset-0 pointer-events-none" id="heroParallaxLayer">
 <!-- Background Decorative Elements -->
 <div class="absolute top-1/4 -left-32 w-96 h-96 bg-copper/15 rounded-full blur-3xl pointer-events-none" id="container0010"></div>
 <div class="absolute bottom-10 right-0 w-[30rem] h-[30rem] bg-copper-dark/10 rounded-full blur-3xl pointer-events-none" id="container0011"></div>
 <div class="absolute inset-0 bg-[radial-gradient(#C87A4B_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.03] pointer-events-none" id="container0012"></div>
+</div>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" id="container0013">
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center" id="container0014">
 <!-- Left Text Column -->
