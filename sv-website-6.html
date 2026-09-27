@@ -1699,7 +1699,6 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   </button>
   <button type="button" data-act="gif" title="Insert GIF">GIF</button>
   <span class="ez-mt-sep"></span>
-  <button type="button" data-act="icon" title="Replace SVG Icon">◇</button>
   <button type="button" data-act="text" title="Typography">Aa</button>
   <button type="button" data-act="border" title="Border weight / radius / padding">▢</button>
   <button type="button" data-act="resize" title="Resize / fill">↔</button>
@@ -1807,28 +1806,10 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
     <div class="ez-divider"></div>
 
-    <div id="ezSecIcon" style="display:none;">
-      <h4>SVG Icon</h4>
-      <div class="ez-field">
-        <label>Paste SVG Code</label>
-        <textarea id="ezIconSvgInput" rows="7" placeholder="<svg viewBox=&quot;0 0 24 24&quot; ...>...</svg>"></textarea>
-      </div>
-      <div class="ez-field">
-        <label>Upload SVG File</label>
-        <input type="file" id="ezIconSvgUpload" accept=".svg,image/svg+xml">
-      </div>
-      <div class="cp-note" style="margin:6px 0 10px;">Select any non-star SVG icon in Edit Page mode. Star ratings are protected and cannot be replaced.</div>
-      <div class="ez-btn-row">
-        <button type="button" id="ezIconApply" class="cp-action-btn cp-action-primary">Apply SVG</button>
-      </div>
-    </div>
-
-    <div class="ez-divider" id="ezIconDivider" style="display:none;"></div>
-
     <div id="ezSecMedia">
       <h4>Media</h4>
-      <div class="ez-field"><label>Upload Image</label><input type="file" id="ezMediaImageUpload" accept="image/*"></div>
-      <div class="ez-field"><label>Image Link (advanced)</label><input type="text" id="ezMediaImageInput" placeholder="Link here"></div>
+      <div class="ez-field"><label>Upload Image/SVG</label><input type="file" id="ezMediaImageUpload" accept="image/*,.svg,image/svg+xml"></div>
+      <div class="ez-field"><label>Image/SVG Link (advanced)</label><input type="text" id="ezMediaImageInput" placeholder="Link here"></div>
       <div class="ez-field"><label>Video Link</label><input type="text" id="ezMediaVideoInput" placeholder="Link here"></div>
       <div class="ez-field"><label>GIF Link</label><input type="text" id="ezMediaGifInput" placeholder="Link here"></div>
       <div class="ez-field"><label>Embed Link</label><input type="text" id="ezMediaEmbedInput" placeholder="Link here"></div>
@@ -2216,9 +2197,6 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       if(!selectedFrame) return;
       switch(act){
         case "color": openStylePanel(["background"]); break;
-        case "icon":
-          if(isReplaceableIcon(selectedFrame)) openStylePanel(["icon"]);
-          break;
         case "text": openStylePanel(["text"]); break;
         case "border": openStylePanel(["border"]); break;
         case "resize": openStylePanel(["size"]); break;
@@ -2529,7 +2507,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   // Border, Padding, Size & Fill, Media, Text), matching the reference 1:1.
   // The triggering toolbar button just scrolls the panel to that section.
   // ============================================================
-  var styleSections = { logo: $("#ezSecLogo"), icon: $("#ezSecIcon"), background: $("#ezSecBackground"), border: $("#ezSecBorder"), size: $("#ezSecSize"), media: $("#ezSecMedia"), text: $("#ezSecText"), counter: $("#ezSecCounter") };
+  var styleSections = { logo: $("#ezSecLogo"), background: $("#ezSecBackground"), border: $("#ezSecBorder"), size: $("#ezSecSize"), media: $("#ezSecMedia"), text: $("#ezSecText"), counter: $("#ezSecCounter") };
   function openStylePanel(sections){
     syncStylePanelFromEl(selectedFrame);
     stylePanel.classList.add("show");
@@ -2567,7 +2545,6 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   function syncStylePanelFromEl(el){
     if(!el) return;
     syncLogoControls();
-    syncIconControls();
     syncCounterControls(el);
     var cs = getComputedStyle(el);
     $("#ezBgColor").value = rgbToHex(cs.backgroundColor) || "#ffffff";
@@ -2760,14 +2737,14 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     pushHistory(); markUnsaved(); syncLogoControls();
   });
 
-  // SVG Icon replacement
+  // Media
+  // Star-rating SVGs remain protected even though all other SVG icons are replaceable.
   function isStarRatingIcon(el){
     if(!el || !el.tagName) return false;
     if(el.getAttribute && el.getAttribute("data-lucide") === "star") return true;
     if(el.tagName.toLowerCase() === "svg" && el.classList && el.classList.contains("fill-copper")) return true;
     return false;
   }
-
   function isReplaceableIcon(el){
     if(!el || !el.tagName) return false;
     var tag = el.tagName.toLowerCase();
@@ -2775,104 +2752,67 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     return tag === "svg" || (tag === "i" && el.hasAttribute("data-lucide"));
   }
 
-  function getIconTarget(){
-    return isReplaceableIcon(selectedFrame) ? selectedFrame : null;
-  }
-
-  function syncIconControls(){
-    var icon = getIconTarget();
-    var sec = $("#ezSecIcon"), divider = $("#ezIconDivider");
-    if(sec) sec.style.display = icon ? "" : "none";
-    if(divider) divider.style.display = icon ? "" : "none";
-    var input = $("#ezIconSvgInput");
-    if(!input) return;
-    input.value = "";
-  }
-
-  function sanitizeSvgNode(svg){
-    if(!svg || svg.nodeType !== 1 || svg.tagName.toLowerCase() !== "svg") return null;
-    $all("script", svg).forEach(function(el){ el.remove(); });
-    $all("*", svg).forEach(function(el){
-      Array.prototype.slice.call(el.attributes || []).forEach(function(attr){
-        var name = attr.name.toLowerCase();
-        var value = attr.value || "";
-        if(name.indexOf("on") === 0) el.removeAttribute(attr.name);
-        if((name === "href" || name === "xlink:href") && /^javascript:/i.test(value)) el.removeAttribute(attr.name);
-      });
-    });
-    return svg;
-  }
-
-  function parseSvgString(source){
-    source = String(source || "").trim();
-    if(!source) return null;
-    try{
-      var doc = new DOMParser().parseFromString(source, "image/svg+xml");
-      var svg = doc.documentElement;
-      if(!svg || svg.tagName.toLowerCase() !== "svg") return null;
-      return sanitizeSvgNode(svg);
-    }catch(err){
-      return null;
-    }
-  }
-
-  function replaceSelectedSvg(svgSource){
-    var oldIcon = getIconTarget();
-    if(!oldIcon) return false;
-
-    var parsed = parseSvgString(svgSource);
-    if(!parsed){
-      showToast("Please provide valid SVG code.", "error");
-      return false;
-    }
-
-    var newIcon = document.importNode(parsed, true);
-    var oldId = oldIcon.id;
-    var oldClasses = Array.prototype.slice.call(oldIcon.classList || []);
-    var incomingClasses = Array.prototype.slice.call(newIcon.classList || []);
-    oldClasses.forEach(function(cls){
-      if(incomingClasses.indexOf(cls) === -1) newIcon.classList.add(cls);
-    });
-    if(oldId) newIcon.id = oldId;
-    newIcon.setAttribute("data-ez-replaced-icon", "true");
-    oldIcon.parentNode.replaceChild(newIcon, oldIcon);
-    selectedFrame = newIcon;
-    selectFrame(newIcon);
-    pushHistory();
-    markUnsaved();
-    syncIconControls();
-    return true;
-  }
-
-  $("#ezIconApply").addEventListener("click", function(){
-    var input = $("#ezIconSvgInput");
-    if(input && input.value.trim()) replaceSelectedSvg(input.value);
-  });
-
-  $("#ezIconSvgUpload").addEventListener("change", function(e){
-    var file = e.target.files && e.target.files[0];
-    if(!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev){
-      $("#ezIconSvgInput").value = String(ev.target.result || "");
-      replaceSelectedSvg($("#ezIconSvgInput").value);
-    };
-    reader.readAsText(file);
-    this.value = "";
-  });
-
-  // Media
   function currentMediaTarget(){
     if(!selectedFrame) return null;
     return selectedFrame.querySelector("img,video,iframe") || selectedFrame;
   }
+  function isSvgSource(source, file){
+    if(file && ((file.type || "").toLowerCase() === "image/svg+xml" || /.svg$/i.test(file.name || ""))) return true;
+    source = String(source || "").trim();
+    return /^data:image\/svg\+xml/i.test(source) || /\.svg(?:[?#].*)?$/i.test(source);
+  }
+
+  function applySvgSource(source, fallbackAsImage){
+    if(!selectedFrame) return false;
+    if(isReplaceableIcon(selectedFrame)){
+      if(/^data:image\/svg\+xml/i.test(source)){
+        try{
+          var raw = source.split(",").slice(1).join(",");
+          var decoded = source.indexOf(";base64,") >= 0 ? atob(raw) : decodeURIComponent(raw);
+          if(replaceSelectedSvg(decoded)) return true;
+        }catch(err){}
+      }
+      if(/<svg[\s>]/i.test(source)){
+        if(replaceSelectedSvg(source)) return true;
+      }
+      if(/^https?:\/\//i.test(source) || source.charAt(0)==="/"){
+        fetch(source, {credentials:"same-origin"})
+          .then(function(r){ if(!r.ok) throw new Error("SVG fetch failed"); return r.text(); })
+          .then(function(svgText){ replaceSelectedSvg(svgText); })
+          .catch(function(){
+            // Advanced external SVG links may not allow CORS. In that case,
+            // keep the linked SVG as an image rather than breaking the icon.
+            if(fallbackAsImage) setFrameImage(source);
+          });
+        return true;
+      }
+    }
+    setFrameImage(source);
+    return true;
+  }
+
   $("#ezMediaImageUpload").addEventListener("change", function(e){
-    var file = e.target.files[0]; if(!file || !selectedFrame) return;
+    var file = e.target.files && e.target.files[0];
+    if(!file || !selectedFrame) return;
     var reader = new FileReader();
-    reader.onload = function(ev){ setFrameImage(ev.target.result); };
-    reader.readAsDataURL(file);
+    reader.onload = function(ev){
+      var source = String(ev.target.result || "");
+      if(isSvgSource(source, file)){
+        applySvgSource(source, true);
+      }else{
+        setFrameImage(source);
+      }
+    };
+    if(isSvgSource("", file)) reader.readAsText(file);
+    else reader.readAsDataURL(file);
+    this.value = "";
   });
-  $("#ezMediaImageInput").addEventListener("change", function(){ if(this.value) setFrameImage(this.value); });
+
+  $("#ezMediaImageInput").addEventListener("change", function(){
+    var source = this.value.trim();
+    if(!source || !selectedFrame) return;
+    applySvgSource(source, true);
+  });
   $("#ezMediaVideoInput").addEventListener("change", function(){ if(this.value && selectedFrame) setFrameVideo(this.value); });
   $("#ezMediaGifInput").addEventListener("change", function(){ if(this.value) setFrameImage(this.value); });
   $("#ezMediaEmbedInput").addEventListener("change", function(){ if(this.value && selectedFrame) setFrameEmbed(this.value); });
