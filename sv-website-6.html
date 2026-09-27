@@ -3830,6 +3830,13 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       });
     }
     buildSectionsList();
+
+    // Saved snapshots can restore raw <i data-lucide> elements.
+    // Re-run Lucide after restoring the saved page so static Hero icons
+    // (and any other restored icons) are converted back to visible SVGs.
+    if(window.lucide && typeof window.lucide.createIcons === "function"){
+      window.lucide.createIcons();
+    }
   }
 
   // Owner Email: auto-detect from the existing "Prefer email?" mailto link
@@ -4088,6 +4095,10 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       applyScheme(schemes[rememberedColorScheme], rememberedColorScheme);
     }
 
+    // Ensure restored/saved static icons are rendered before final theme overrides.
+    if(window.lucide && typeof window.lucide.createIcons === "function"){
+      window.lucide.createIcons();
+    }
     applyIvorySageDirectOverrides();
 
     if(window.ensureInquiryPhoneField){ window.ensureInquiryPhoneField(); }
