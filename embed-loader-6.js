@@ -48,12 +48,25 @@
     return;
   }
 
-  if(payload && pageUrl.indexOf('#') === -1 && pageUrl.indexOf('data=') === -1){
-    pageUrl += '#data=' + encodeURIComponent(payload);
+  // Embedded/live pages should never expose the editor UI.
+  // The HTML already has a built-in .ez-view-only rule keyed to live=1.
+  var livePageUrl = pageUrl;
+  try {
+    var resolvedPageUrl = new URL(pageUrl, window.location.href);
+    resolvedPageUrl.hash = payload
+      ? 'data=' + encodeURIComponent(payload) + '&live=1'
+      : 'live=1';
+    livePageUrl = resolvedPageUrl.href;
+  } catch(e) {
+    if(payload && livePageUrl.indexOf('#') === -1 && livePageUrl.indexOf('data=') === -1){
+      livePageUrl += '#data=' + encodeURIComponent(payload) + '&live=1';
+    } else if(!payload && livePageUrl.indexOf('#') === -1){
+      livePageUrl += '#live=1';
+    }
   }
 
   var iframe = document.createElement('iframe');
-  iframe.src = pageUrl;
+  iframe.src = livePageUrl;
   iframe.style.width = '100%';
   iframe.style.border = '0';
   iframe.style.display = 'block';
