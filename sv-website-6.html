@@ -3002,10 +3002,13 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 
     if(ivory){
       exact.forEach(function(el){
-        setImportantStyle(el, "border-color", darkGreen);
+        setImportantStyle(el, "background-color", hexToRgba(darkGreen,.10));
+        setImportantStyle(el, "border-color", hexToRgba(darkGreen,.30));
+        setImportantStyle(el, "color", darkGreen);
       });
 
       setImportantStyle(document.getElementById("icon0006"), "color", darkGreen);
+      setImportantStyle(document.getElementById("icon0006"), "stroke", darkGreen);
       setImportantStyle(document.getElementById("icon0009"), "color", darkGreen);
       setImportantStyle(document.getElementById("icon0009"), "stroke", darkGreen);
 
@@ -3054,6 +3057,12 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       document.querySelectorAll("#origin-grid .text-copper, #origin-grid .text-cream-50").forEach(function(el){
         setImportantStyle(el, "color", "#FFFFFF");
       });
+      setImportantStyle(document.getElementById("container0030"), "background-color", "rgba(47,93,80,.10)");
+      setImportantStyle(document.getElementById("container0030"), "border-color", "rgba(47,93,80,.30)");
+      setImportantStyle(document.getElementById("container0030"), "color", "#2F5D50");
+      setImportantStyle(document.getElementById("icon0007"), "color", "#2F5D50");
+      setImportantStyle(document.getElementById("icon0007"), "stroke", "#2F5D50");
+      setImportantStyle(document.getElementById("text0015"), "color", "#2F5D50");
     }
   }
 
@@ -3062,10 +3071,10 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
   Object.keys(schemes).forEach(function(id){
     $("#"+id).addEventListener("click", function(){
       applyScheme(schemes[id], id);
+      // Color scheme selection is immediately persisted and reflected in the Embed Code.
+      persistSelectedColorScheme();
       markUnsaved();
       updateEmbedScriptPreview();
-      // Color scheme selection is immediately persisted; Save Settings is not required.
-      persistSelectedColorScheme();
     });
   });
   function applyScheme(s, schemeId){
@@ -3085,7 +3094,15 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       .bg-espresso-950,.bg-espresso-900{background-color:${bg}!important;}
       .bg-espresso-800,.bg-espresso-800\\/40,.bg-espresso-800\\/50{background-color:${surface}!important;}
       .text-cream-50,.text-cream-100,.text-cream-200,.text-cream-300,.text-cream-400{color:${ink}!important;}
-      .text-copper{color:${accent}!important}.bg-copper{background-color:${accent}!important}.border-copper,.border-copper\\/10,.border-copper\\/15,.border-copper\\/20,.border-copper\\/30{border-color:${line}!important}
+      .text-copper{color:${accent}!important}
+      .bg-copper{background-color:${accent}!important}
+      .bg-copper\\/5{background-color:${hexToRgba(accent,.05)}!important}
+      .bg-copper\\/10{background-color:${hexToRgba(accent,.10)}!important}
+      .bg-copper\\/15{background-color:${hexToRgba(accent,.15)}!important}
+      .bg-copper\\/20{background-color:${hexToRgba(accent,.20)}!important}
+      .bg-copper\\/30{background-color:${hexToRgba(accent,.30)}!important}
+      .bg-copper\\/40{background-color:${hexToRgba(accent,.40)}!important}
+      .border-copper,.border-copper\\/10,.border-copper\\/15,.border-copper\\/20,.border-copper\\/30,.border-copper\\/40{border-color:${hexToRgba(accent,.30)}!important}
       .glass-card{background:${surface}!important;border-color:${line}!important}
       .glass-dark{background:${bg}!important;border-color:${line}!important}
       #navbar{border-bottom-color:${line}!important}
@@ -3093,6 +3110,18 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       .hover\\:border-copper:hover{border-color:${accent}!important}
       .text-espresso-950{color:${accentInk}!important;}
       svg.fill-copper{fill:${accent}!important;stroke:none!important;}
+
+      /* Consistent icon-display treatment across every color scheme. */
+      #container0027,#container0030,#container0051,#container0053{
+        background-color:${hexToRgba(accent,.10)}!important;
+        border-color:${hexToRgba(accent,.30)}!important;
+        color:${accent}!important;
+      }
+      #container0027 svg,#container0030 svg,#container0051 svg,#container0053 svg{
+        color:${accent}!important;
+        stroke:${accent}!important;
+      }
+      #text0015{color:${accent}!important;}
 
       /* Ivory Sage accessibility refinements:
          keep controls/panels light and preserve white text on image overlays. */
