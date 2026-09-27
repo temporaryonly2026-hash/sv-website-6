@@ -2970,7 +2970,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       var settings = collectSettings();
       settings.colorScheme = selected;
       localStorage.setItem(LS_SETTINGS, JSON.stringify(settings));
-      localStorage.setItem(LS_DRAFT, JSON.stringify(settings));
+      // Color-scheme changes are real-time saved settings, not an unsaved draft.
+      // Any unrelated pre-existing draft remains untouched.
+
     }catch(e){}
   }
 
@@ -3085,8 +3087,10 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     $("#"+id).addEventListener("click", function(){
       applyScheme(schemes[id], id);
       // Color scheme selection is immediately persisted and reflected in the Embed Code.
+      // It is already saved, so do not create an unsaved-draft state.
       persistSelectedColorScheme();
-      markUnsaved();
+      unsaved = false;
+      unsavedPill.style.display = "none";
       updateEmbedScriptPreview();
     });
   });
@@ -3134,6 +3138,18 @@ body.ez-edit-on .ez-add-btn{display:flex;}
         stroke:${accent}!important;
       }
       #text0015{color:${accent}!important;}
+
+      /* Ivory Sage: green accent buttons use white text and icons for contrast. */
+      html[data-ez-color-scheme="scheme2"] .bg-copper,
+      html[data-ez-color-scheme="scheme2"] .bg-copper.text-espresso-950,
+      html[data-ez-color-scheme="scheme2"] .bg-copper .text-espresso-950{
+        color:#FFFFFF!important;
+      }
+      html[data-ez-color-scheme="scheme2"] .bg-copper svg,
+      html[data-ez-color-scheme="scheme2"] .bg-copper i{
+        color:#FFFFFF!important;
+        stroke:#FFFFFF!important;
+      }
 
       /* Ivory Sage accessibility refinements:
          keep controls/panels light and preserve white text on image overlays. */
@@ -4039,6 +4055,18 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     try{ rememberedColorScheme = localStorage.getItem(LS_COLOR_SCHEME); }catch(e){}
     try{ saved = JSON.parse(localStorage.getItem(LS_SETTINGS) || "null"); }catch(e){}
     try{ draft = JSON.parse(localStorage.getItem(LS_DRAFT) || "null"); }catch(e){}
+    // Previous versions temporarily stored color-scheme selections as drafts.
+    // If that legacy draft is identical to the saved settings, discard it silently
+    // so hard refresh does not show the resume-draft prompt for a scheme-only change.
+    if(draft && saved){
+      try{
+        if(JSON.stringify(draft) === JSON.stringify(saved)){
+          localStorage.removeItem(LS_DRAFT);
+          draft = null;
+        }
+      }catch(e){}
+    }
+
     if(urlSettings){
       applySettings(urlSettings);
       if(!urlSettings.colorScheme && rememberedColorScheme && schemes[rememberedColorScheme]){
