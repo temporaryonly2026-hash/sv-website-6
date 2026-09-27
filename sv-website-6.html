@@ -2990,80 +2990,99 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
 
   function applyIvorySageDirectOverrides(){
     var ivory = document.documentElement.getAttribute("data-ez-color-scheme") === "scheme2";
-    var darkGreen = "#2F5D50";
-    var lightPanel = "#FFFFFF";
-    var lightBadge = "#F7F4EE";
-    var darkInk = "#1C1B18";
 
-    var exact = [
-      document.getElementById("container0027"),
-      document.getElementById("container0051")
+    // These inline properties are only used as a compatibility fallback for
+    // dynamically-rendered content. Always clear our previous overrides first
+    // so switching away from Ivory Sage cannot leak its colors into another theme.
+    var directSelectors = [
+      "#container0027",
+      "#container0030",
+      "#container0051",
+      "#container0053",
+      "#icon0006",
+      "#icon0007",
+      "#icon0009",
+      "#text0015"
     ];
 
-    if(ivory){
-      exact.forEach(function(el){
-        setImportantStyle(el, "background-color", hexToRgba(darkGreen,.10));
-        setImportantStyle(el, "border-color", hexToRgba(darkGreen,.30));
-        setImportantStyle(el, "color", darkGreen);
+    directSelectors.forEach(function(selector){
+      document.querySelectorAll(selector).forEach(function(el){
+        ["background-color","border-color","color","stroke"].forEach(function(prop){
+          el.style.removeProperty(prop);
+        });
       });
+    });
 
-      setImportantStyle(document.getElementById("icon0006"), "color", darkGreen);
-      setImportantStyle(document.getElementById("icon0006"), "stroke", darkGreen);
-      setImportantStyle(document.getElementById("icon0009"), "color", darkGreen);
-      setImportantStyle(document.getElementById("icon0009"), "stroke", darkGreen);
-
-      document.querySelectorAll("#product-grid .absolute.top-3.left-3").forEach(function(el){
-        setImportantStyle(el, "background-color", lightBadge);
-        setImportantStyle(el, "color", darkGreen);
-        setImportantStyle(el, "border-color", "rgba(28,27,24,.14)");
+    document.querySelectorAll("#product-grid .absolute.top-3.left-3, #product-grid .group\\/btn, #product-grid .group\\/btn svg, #roast-display-panel [class*='bg-espresso-950/70'], #roast-display-panel [class*='bg-espresso-950/70'] strong, #roast-display-panel [class*='bg-espresso-950/70'] h4, #roast-display-panel [class*='bg-espresso-950/70'] > div, #roast-display-panel [class*='bg-espresso-950/70'] svg, #origin-grid .text-copper, #origin-grid .text-cream-50").forEach(function(el){
+      ["background-color","border-color","color","stroke"].forEach(function(prop){
+        el.style.removeProperty(prop);
       });
+    });
 
-      document.querySelectorAll("#product-grid .group\/btn").forEach(function(el){
-        setImportantStyle(el, "background-color", lightBadge);
-        setImportantStyle(el, "color", darkInk);
-      });
-      document.querySelectorAll("#product-grid .group\/btn svg").forEach(function(el){
-        setImportantStyle(el, "color", darkGreen);
-        setImportantStyle(el, "stroke", darkGreen);
-      });
+    if(!ivory) return;
 
-      var formatPanel = document.getElementById("roast-display-panel");
-      if(formatPanel){
-        var recommended = formatPanel.querySelector(".lg\\:col-span-5.bg-espresso-950\\/70") ||
-                          formatPanel.querySelector(".bg-espresso-950\\/70");
-        if(!recommended) recommended = formatPanel.querySelector("[class*='bg-espresso-950/70']");
-        if(recommended){
-          setImportantStyle(recommended, "background-color", lightPanel);
-          setImportantStyle(recommended, "color", darkInk);
-          setImportantStyle(recommended, "border-color", "rgba(28,27,24,.14)");
-        }
-        if(formatPanel){
-          formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] strong, [class*='bg-espresso-950/70'] h4").forEach(function(el){
-            setImportantStyle(el, "color", darkInk);
-          });
-          formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] > div").forEach(function(row){
-            setImportantStyle(row, "color", darkInk);
-          });
-          formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] svg").forEach(function(svg){
-            setImportantStyle(svg, "color", darkGreen);
-            setImportantStyle(svg, "stroke", darkGreen);
-          });
-          formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] strong").forEach(function(strong){
-            setImportantStyle(strong, "color", darkGreen);
-          });
-        }
+    // Ivory Sage follows the same accent treatment as #container0053.
+    var green = "#2F5D50";
+    var light = "rgba(255,255,255,.94)";
+    var badge = "#F7F4EE";
+    var dark = "#1C1B18";
+
+    ["#container0027","#container0030","#container0051","#container0053"].forEach(function(selector){
+      document.querySelectorAll(selector).forEach(function(el){
+        setImportantStyle(el, "background-color", "rgba(47,93,80,.10)");
+        setImportantStyle(el, "border-color", "rgba(47,93,80,.30)");
+        setImportantStyle(el, "color", green);
+      });
+    });
+
+    ["#icon0006","#icon0007","#icon0009"].forEach(function(selector){
+      document.querySelectorAll(selector).forEach(function(el){
+        setImportantStyle(el, "color", green);
+        setImportantStyle(el, "stroke", green);
+      });
+    });
+
+    setImportantStyle(document.getElementById("text0015"), "color", green);
+
+    document.querySelectorAll("#product-grid .absolute.top-3.left-3").forEach(function(el){
+      setImportantStyle(el, "background-color", badge);
+      setImportantStyle(el, "color", green);
+      setImportantStyle(el, "border-color", "rgba(28,27,24,.14)");
+    });
+
+    document.querySelectorAll("#product-grid .group\\/btn").forEach(function(el){
+      setImportantStyle(el, "background-color", badge);
+      setImportantStyle(el, "color", dark);
+    });
+
+    document.querySelectorAll("#product-grid .group\\/btn svg").forEach(function(el){
+      setImportantStyle(el, "color", green);
+      setImportantStyle(el, "stroke", green);
+    });
+
+    var formatPanel = document.getElementById("roast-display-panel");
+    if(formatPanel){
+      var recommended = formatPanel.querySelector("[class*='bg-espresso-950/70']");
+      if(recommended){
+        setImportantStyle(recommended, "background-color", light);
+        setImportantStyle(recommended, "color", dark);
+        setImportantStyle(recommended, "border-color", "rgba(28,27,24,.14)");
       }
-
-      document.querySelectorAll("#origin-grid .text-copper, #origin-grid .text-cream-50").forEach(function(el){
-        setImportantStyle(el, "color", "#FFFFFF");
+      formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] strong, [class*='bg-espresso-950/70'] h4").forEach(function(el){
+        setImportantStyle(el, "color", dark);
       });
-      setImportantStyle(document.getElementById("container0030"), "background-color", "rgba(47,93,80,.10)");
-      setImportantStyle(document.getElementById("container0030"), "border-color", "rgba(47,93,80,.30)");
-      setImportantStyle(document.getElementById("container0030"), "color", "#2F5D50");
-      setImportantStyle(document.getElementById("icon0007"), "color", "#2F5D50");
-      setImportantStyle(document.getElementById("icon0007"), "stroke", "#2F5D50");
-      setImportantStyle(document.getElementById("text0015"), "color", "#2F5D50");
+      formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] > div").forEach(function(row){
+        setImportantStyle(row, "color", dark);
+      });
+      formatPanel.querySelectorAll("[class*='bg-espresso-950/70'] svg").forEach(function(svg){
+        setImportantStyle(svg, "color", green);
+        setImportantStyle(svg, "stroke", green);
+      });
     }
+
+    document.querySelectorAll("#origin-grid .text-copper, #origin-grid .text-cream-50").forEach(function(el){
+      setImportantStyle(el, "color", "#FFFFFF");
+    });
   }
 
   window.applyIvorySageDirectOverrides = applyIvorySageDirectOverrides;
@@ -3084,6 +3103,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
     document.documentElement.style.setProperty("--ez-solace-accent", s.accent);
     document.documentElement.style.setProperty("--ez-solace-line", s.line);
     document.documentElement.setAttribute("data-ez-color-scheme", schemeId || "");
+    if(window.applyIvorySageDirectOverrides) window.applyIvorySageDirectOverrides();
     var st=document.getElementById("ez-solace-scheme-style");
     if(!st){ st=document.createElement("style"); st.id="ez-solace-scheme-style"; document.head.appendChild(st); }
     var bg=s.bg, surface=s.surface, ink=s.ink, accent=s.accent, line=s.line;
