@@ -3843,8 +3843,15 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       layer.style.transformOrigin = "";
       hero.classList.remove("ez-hero-parallax-proxy");
     }
+  }
 
-    heroParallaxRaf = requestAnimationFrame(syncHeroParallax);
+  function scheduleHeroParallaxSync(){
+    if(heroParallaxRaf) return;
+    heroParallaxRaf = requestAnimationFrame(function(){
+      heroParallaxRaf = 0;
+      syncHeroParallax();
+      scheduleHeroParallaxSync();
+    });
   }
 
   function startHeroParallaxProxy(){
@@ -3860,7 +3867,7 @@ body.ez-edit-on .ez-solace-editable.ez-selected{outline:2px solid #C9A15A;outlin
       heroParallaxObserver.observe(hero, { attributes:true, attributeFilter:["style"] });
     }
 
-    if(!heroParallaxRaf) heroParallaxRaf = requestAnimationFrame(syncHeroParallax);
+    scheduleHeroParallaxSync();
   }
 
   window.__ezStartHeroParallaxProxy = startHeroParallaxProxy;
