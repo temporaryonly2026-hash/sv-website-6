@@ -420,7 +420,7 @@ body:not(.ez-edit-on) .item-actions{display:none !important;}
   display:grid;grid-template-columns:repeat(3,1fr);gap:7px;
 }
 #ezProductEditorModal .editor-rating-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:7px;
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
 }
 #ezProductEditorModal .editor-check{
   display:flex;align-items:center;gap:8px;min-height:38px;
@@ -2464,10 +2464,16 @@ body.ez-edit-on .ez-add-btn{display:flex;}
         <div class="editor-field full">
           <label>Ratings</label>
           <div class="editor-rating-grid">
-            <input type="text" id="ezProductRatingInput" autocomplete="off" placeholder="4.8" aria-label="Rating">
-            <input type="text" id="ezProductReviewsInput" autocomplete="off" placeholder="94" aria-label="Total Reviews">
+            <div>
+              <div style="font-size:10px;color:#6f716d;margin:0 0 5px;">Rating</div>
+              <input type="text" id="ezProductRatingInput" autocomplete="off" placeholder="4.8" aria-label="Rating">
+            </div>
+            <div>
+              <div style="font-size:10px;color:#6f716d;margin:0 0 5px;">Total Reviews</div>
+              <input type="text" id="ezProductReviewsInput" autocomplete="off" placeholder="94" aria-label="Total Reviews">
+            </div>
           </div>
-          <div class="editor-help">These are plain text fields. Example: Rating 4.8 and Total Reviews 94.</div>
+          <div class="editor-help">Plain text values. Example: Rating 4.8 and Total Reviews 94.</div>
         </div>
 
         <div class="editor-field">
@@ -4070,14 +4076,21 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     if(!productEditorCategory) return;
     productEditorCategory.innerHTML = "";
     state.productCategories.forEach(function(cat){
+      // "All Products" is a filter tab, not a product assignment category.
+      if(cat.id === "all") return;
       var option = document.createElement("option");
       option.value = cat.id;
       option.textContent = cat.name;
       productEditorCategory.appendChild(option);
     });
-    productEditorCategory.value = state.productCategories.some(function(cat){ return cat.id === selectedId; })
+    var fallback = "ebooks";
+    if(!state.productCategories.some(function(cat){ return cat.id === fallback; })){
+      var firstAssignable = state.productCategories.find(function(cat){ return cat.id !== "all"; });
+      fallback = firstAssignable ? firstAssignable.id : "all";
+    }
+    productEditorCategory.value = state.productCategories.some(function(cat){ return cat.id === selectedId && cat.id !== "all"; })
       ? selectedId
-      : "ebooks";
+      : fallback;
   }
 
   function openProductEditor(id){
@@ -4157,7 +4170,10 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     }
 
     var category = normalizeProductCategoryId(productEditorCategory.value || "ebooks");
-    if(!state.productCategories.some(function(cat){ return cat.id === category; })) category = "ebooks";
+    if(category === "all" || !state.productCategories.some(function(cat){ return cat.id === category && cat.id !== "all"; })){
+      var firstAssignable = state.productCategories.find(function(cat){ return cat.id !== "all"; });
+      category = firstAssignable ? firstAssignable.id : "all";
+    }
 
     var tags = productEditorTagInputs.map(function(input){
       return (input.value || "").trim();
@@ -4199,8 +4215,11 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       state.activeProductId = existing.id;
     }
 
-    state.activeProductCategory = state.activeProductCategory || "all";
-    renderProducts(state.activeProductCategory);
+    // Keep the manager/filter view useful after an edit. If the product
+    // was moved to a different category, show that destination category.
+    state.activeProductCategory = category;
+    productManagerActiveCategory = category;
+    renderProducts(category);
     renderProductManager();
 
     pushHistory();
