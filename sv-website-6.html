@@ -1572,42 +1572,6 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             if (keyByHash[hash]) openLegalPage(keyByHash[hash], false);
             else closeLegalPage(false);
         });
-            const page = LEGAL_CONTENT[key];
-            const legalPage = document.getElementById('legal-pages');
-            const title = document.getElementById('legal-title');
-            const eyebrow = document.getElementById('legal-eyebrow');
-            const content = document.getElementById('legal-content');
-            if (!page || !legalPage || !title || !eyebrow || !content) return;
-            title.textContent = page.title;
-            eyebrow.textContent = page.eyebrow;
-            content.innerHTML = page.sections.map(([h, body]) => `<section><h2 class="font-serif text-2xl text-cream-50 mb-2">${h}</h2><p>${body}</p></section>`).join('');
-            legalPage.classList.remove('hidden');
-            legalPage.setAttribute('aria-hidden','false');
-            document.documentElement.classList.add('overflow-hidden');
-            if (pushHistory) history.pushState({legal:key}, '', `#${key === 'privacy' ? 'privacy-policy' : key === 'terms' ? 'terms-of-service' : 'digital-product-terms'}`);
-            window.__assignRuntimeIds?.(legalPage);
-        }
-
-        function closeLegalPage(pushHistory=true) {
-            const legalPage = document.getElementById('legal-pages');
-            if (!legalPage) return;
-            legalPage.classList.add('hidden');
-            legalPage.setAttribute('aria-hidden','true');
-            document.documentElement.classList.remove('overflow-hidden');
-            if (pushHistory) history.pushState({}, '', '#hero');
-        }
-
-        document.querySelectorAll('[data-legal-page]').forEach(link => {
-            link.addEventListener('click', (e) => { e.preventDefault(); openLegalPage(link.dataset.legalPage); });
-        });
-        document.getElementById('legal-back-button')?.addEventListener('click', () => closeLegalPage(true));
-        window.addEventListener('popstate', () => {
-            const hash = window.location.hash;
-            if (hash === '#privacy-policy') openLegalPage('privacy', false);
-            else if (hash === '#terms-of-service') openLegalPage('terms', false);
-            else if (hash === '#digital-product-terms') openLegalPage('digital-products', false);
-            else closeLegalPage(false);
-        });
 
 
         document.getElementById('quickview-backdrop').addEventListener('click', closeQuickViewModal);
