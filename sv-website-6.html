@@ -1399,8 +1399,13 @@ body.ez-edit-on .ez-add-btn{display:flex;}
                 return id;
             };
             function assignRuntimeIds(root=document) {
-                root.querySelectorAll?.('body *:not(script):not(style):not(template)').forEach(el => {
-                    if (!el.id) el.id = window.__solaceUid(el.tagName.toLowerCase());
+                var nodes = [];
+                if(root && root.nodeType === 1) nodes.push(root);
+                if(root && root.querySelectorAll){
+                    root.querySelectorAll('*:not(script):not(style):not(template)').forEach(function(el){ nodes.push(el); });
+                }
+                nodes.forEach(function(el){
+                    if(!el.id) el.id = window.__solaceUid(el.tagName.toLowerCase());
                 });
             }
             window.__assignRuntimeIds = assignRuntimeIds;
@@ -1550,6 +1555,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             document.documentElement.classList.add('overflow-hidden');
             if (pushHistory) history.pushState({legal:key}, '', `#${legalHashForKey(key)}`);
             window.__assignRuntimeIds?.(legalPage);
+            if(typeof ensurePageElementIds === 'function') ensurePageElementIds();
             if(typeof ensureSolaceEditorTargets === 'function') ensureSolaceEditorTargets();
             if(typeof setEditMode === 'function') {
                 document.querySelectorAll('.editable-text').forEach(function(el){ el.setAttribute('contenteditable', editOn ? 'true' : 'false'); });
