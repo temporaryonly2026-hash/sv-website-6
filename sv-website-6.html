@@ -820,7 +820,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 <span class="text-xs font-semibold text-copper tracking-widest uppercase block mb-2" id="legal-eyebrow">LEGAL</span>
 <h1 class="font-serif text-4xl sm:text-6xl text-cream-50 font-normal" id="legal-title">Privacy Policy</h1>
 </div>
-<button class="shrink-0 px-5 py-3 rounded-xl border border-copper/30 text-cream-100 hover:text-copper hover:border-copper/60 transition-colors text-xs font-semibold uppercase tracking-wider" id="legal-back-button">Back to Homepage</button>
+<button type="button" data-legal-back="true" class="shrink-0 px-5 py-3 rounded-xl border border-copper/30 text-cream-100 hover:text-copper hover:border-copper/60 transition-colors text-xs font-semibold uppercase tracking-wider" id="legal-back-button">Back to Homepage</button>
 </div>
 <div class="glass-card rounded-2xl border border-copper/20 p-6 sm:p-10 space-y-8 leading-relaxed text-sm text-cream-300" id="legal-content"></div>
 </div>
@@ -858,9 +858,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 <h4 class="font-serif text-cream-50 font-semibold text-base mb-3" id="heading0020">Support</h4>
 <ul class="space-y-2 text-xs text-cream-400" id="list0002">
 <li id="item0005"><a class="hover:text-copper transition-colors" href="#contact" id="link0029">Contact Support</a></li>
-<li id="item0006"><a class="hover:text-copper transition-colors" href="#" id="link0030">Product Guides</a></li>
-<li id="item0007"><a class="hover:text-copper transition-colors" href="#" id="link0031">Download Help</a></li>
-<li id="item0008"><a class="hover:text-copper transition-colors" href="#" id="link0032">Licensing</a></li>
+<li id="item0006"><a class="hover:text-copper transition-colors" data-legal-page="product-guides" href="#product-guides" id="link0030">Product Guides</a></li>
+<li id="item0007"><a class="hover:text-copper transition-colors" data-legal-page="download-help" href="#download-help" id="link0031">Download Help</a></li>
+<li id="item0008"><a class="hover:text-copper transition-colors" data-legal-page="licensing" href="#licensing" id="link0032">Licensing</a></li>
 </ul>
 </div>
 <!-- Our Socials -->
@@ -1434,10 +1434,144 @@ body.ez-edit-on .ez-add-btn{display:flex;}
                     ['Refunds and product-specific terms', 'Any refund, replacement, or product-specific condition is governed by the terms displayed with the applicable product or purchase flow.'],
                     ['Support', 'For access or download issues, contact support with the product name and the email used for the purchase or inquiry.']
                 ]
+            },
+            'product-guides': {
+                title: 'Product Guides',
+                eyebrow: 'SUPPORT',
+                sections: [
+                    ['Page content', 'Add your Product Guides content here.']
+                ]
+            },
+            'download-help': {
+                title: 'Download Help',
+                eyebrow: 'SUPPORT',
+                sections: [
+                    ['Page content', 'Add your Download Help content here.']
+                ]
+            },
+            licensing: {
+                title: 'Licensing',
+                eyebrow: 'SUPPORT',
+                sections: [
+                    ['Page content', 'Add your Licensing content here.']
+                ]
             }
         };
 
+        function cloneLegalContentMap(){
+            var out = {};
+            Object.keys(LEGAL_CONTENT).forEach(function(key){
+                var page = LEGAL_CONTENT[key];
+                out[key] = {
+                    title: page.title,
+                    eyebrow: page.eyebrow,
+                    sections: Array.isArray(page.sections)
+                        ? page.sections.map(function(pair){ return [pair[0], pair[1]]; })
+                        : [],
+                    contentHTML: typeof page.contentHTML === 'string' ? page.contentHTML : null
+                };
+            });
+            return out;
+        }
+
+        function restoreLegalContentMap(saved){
+            if(!saved || typeof saved !== 'object') return;
+            Object.keys(saved).forEach(function(key){
+                if(!LEGAL_CONTENT[key] || !saved[key]) return;
+                var page = saved[key];
+                if(typeof page.title === 'string') LEGAL_CONTENT[key].title = page.title;
+                if(typeof page.eyebrow === 'string') LEGAL_CONTENT[key].eyebrow = page.eyebrow;
+                if(Array.isArray(page.sections)) LEGAL_CONTENT[key].sections = page.sections.map(function(pair){ return [String(pair[0] == null ? '' : pair[0]), String(pair[1] == null ? '' : pair[1])]; });
+                if(typeof page.contentHTML === 'string') LEGAL_CONTENT[key].contentHTML = page.contentHTML;
+            });
+        }
+
+        function syncLegalPageFromDom(){
+            var legalPage = document.getElementById('legal-pages');
+            if(!legalPage || legalPage.classList.contains('hidden')) return;
+            var key = legalPage.getAttribute('data-page-key') || '';
+            if(!key || !LEGAL_CONTENT[key]) return;
+            var title = document.getElementById('legal-title');
+            var eyebrow = document.getElementById('legal-eyebrow');
+            var content = document.getElementById('legal-content');
+            if(title) LEGAL_CONTENT[key].title = title.textContent || LEGAL_CONTENT[key].title;
+            if(eyebrow) LEGAL_CONTENT[key].eyebrow = eyebrow.textContent || LEGAL_CONTENT[key].eyebrow;
+            if(content) LEGAL_CONTENT[key].contentHTML = content.innerHTML;
+        }
+
+        function legalHashForKey(key){
+            return ({
+                privacy: 'privacy-policy',
+                terms: 'terms-of-service',
+                'digital-products': 'digital-product-terms',
+                'product-guides': 'product-guides',
+                'download-help': 'download-help',
+                licensing: 'licensing'
+            })[key] || key;
+        }
+
         function openLegalPage(key, pushHistory=true) {
+            syncLegalPageFromDom();
+            const page = LEGAL_CONTENT[key];
+            const legalPage = document.getElementById('legal-pages');
+            const title = document.getElementById('legal-title');
+            const eyebrow = document.getElementById('legal-eyebrow');
+            const content = document.getElementById('legal-content');
+            if (!page || !legalPage || !title || !eyebrow || !content) return;
+            title.textContent = page.title;
+            eyebrow.textContent = page.eyebrow;
+            if(typeof page.contentHTML === 'string'){
+                content.innerHTML = page.contentHTML;
+            } else {
+                content.innerHTML = page.sections.map(([h, body]) => `<section><h2 class="font-serif text-2xl text-cream-50 mb-2">${h}</h2><p>${body}</p></section>`).join('');
+                page.contentHTML = content.innerHTML;
+            }
+            legalPage.setAttribute('data-page-key', key);
+            legalPage.classList.remove('hidden');
+            legalPage.setAttribute('aria-hidden','false');
+            document.documentElement.classList.add('overflow-hidden');
+            if (pushHistory) history.pushState({legal:key}, '', `#${legalHashForKey(key)}`);
+            window.__assignRuntimeIds?.(legalPage);
+            if(typeof ensureSolaceEditorTargets === 'function') ensureSolaceEditorTargets();
+            if(typeof setEditMode === 'function') {
+                document.querySelectorAll('.editable-text').forEach(function(el){ el.setAttribute('contenteditable', editOn ? 'true' : 'false'); });
+            }
+        }
+
+        function closeLegalPage(pushHistory=true) {
+            syncLegalPageFromDom();
+            const legalPage = document.getElementById('legal-pages');
+            if (!legalPage) return;
+            legalPage.classList.add('hidden');
+            legalPage.setAttribute('aria-hidden','true');
+            document.documentElement.classList.remove('overflow-hidden');
+            if (pushHistory) history.pushState({}, '', '#hero');
+        }
+
+        document.querySelectorAll('[data-legal-page]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                if(typeof window.ezShowPage === 'function') window.ezShowPage(link.dataset.legalPage);
+                else openLegalPage(link.dataset.legalPage);
+            });
+        });
+        document.getElementById('legal-back-button')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeLegalPage(true);
+        });
+        window.addEventListener('popstate', () => {
+            const hash = window.location.hash;
+            const keyByHash = {
+                '#privacy-policy':'privacy',
+                '#terms-of-service':'terms',
+                '#digital-product-terms':'digital-products',
+                '#product-guides':'product-guides',
+                '#download-help':'download-help',
+                '#licensing':'licensing'
+            };
+            if (keyByHash[hash]) openLegalPage(keyByHash[hash], false);
+            else closeLegalPage(false);
+        });
             const page = LEGAL_CONTENT[key];
             const legalPage = document.getElementById('legal-pages');
             const title = document.getElementById('legal-title');
@@ -2154,6 +2288,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     var insidePanelUi = e.target.closest("#customizePanel,#ezStylePanel,#ezFrameToolbar,#ezAttrInspector,#ezLinkPopup,#ezIdListPanel,#ezCustomCodeModal,#ezUnsavedPill");
     if(insidePanelUi) return;
     if(e.target.closest("a")){ e.preventDefault(); }
+    if(e.target.closest("#legal-back-button") && !editOn){
+      return;
+    }
 
     // Prefer the most specific UI element. An explicitly-ID'd child (especially
     // an image) must win over its parent .ez-frame so Size & Fill edits the
@@ -3043,6 +3180,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   var pageRows = {};
   function showEzPage(id, opts){
     opts = opts || {};
+    if(id !== "home") syncLegalPageFromDom();
     currentEzPage = id;
     if(id === "home"){
       if(window.closeLegalPage) window.closeLegalPage(false);
@@ -3067,6 +3205,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     if(href === "#privacy-policy"){ e.preventDefault(); showEzPage("privacy"); return; }
     if(href === "#terms-of-service"){ e.preventDefault(); showEzPage("terms"); return; }
     if(href === "#digital-product-terms"){ e.preventDefault(); showEzPage("digital-products"); return; }
+    if(href === "#product-guides"){ e.preventDefault(); showEzPage("product-guides"); return; }
+    if(href === "#download-help"){ e.preventDefault(); showEzPage("download-help"); return; }
+    if(href === "#licensing"){ e.preventDefault(); showEzPage("licensing"); return; }
     if(currentEzPage !== "home" && href.charAt(0) === "#" && href.length > 1){
       e.preventDefault(); showEzPage("home", {silent:true});
       setTimeout(function(){ var t=document.getElementById(href.slice(1)); if(t)t.scrollIntoView({behavior:"smooth",block:"start"}); },60);
@@ -3081,7 +3222,10 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       ["home", "Homepage", true],
       ["privacy", "Privacy Policy", true],
       ["terms", "Terms of Service / Conditions", true],
-      ["digital-products", "Digital Product Terms / Refund Policy", true]
+      ["digital-products", "Digital Product Terms / Refund Policy", true],
+      ["product-guides", "Product Guides", true],
+      ["download-help", "Download Help", true],
+      ["licensing", "Licensing", true]
     ];
     pages.forEach(function(item){
       var id=item[0], label=item[1];
@@ -3841,10 +3985,12 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   }
 
   function snapshotPageForHistory(){
+    syncLegalPageFromDom();
     return {
       mainHTML: snapshotMain(),
       headerHTML: snapshotHeader(),
-      footerHTML: snapshotFooter()
+      footerHTML: snapshotFooter(),
+      legalPages: cloneLegalContentMap()
     };
   }
 
@@ -3878,9 +4024,10 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   function restoreSnapshot(snap){
     if(typeof snap === "string"){
       // Compatibility with any in-memory history entry created before this patch.
-      snap = { mainHTML: snap, headerHTML: snapshotHeader(), footerHTML: snapshotFooter() };
+      snap = { mainHTML: snap, headerHTML: snapshotHeader(), footerHTML: snapshotFooter(), legalPages: null };
     }
     if(!snap) return;
+    if(snap.legalPages) restoreLegalContentMap(snap.legalPages);
 
     var main = document.getElementById("main");
     if(main && typeof snap.mainHTML === "string"){
@@ -3969,10 +4116,12 @@ body.ez-edit-on .ez-add-btn{display:flex;}
         decimals: counter.getAttribute("data-decimals") || "0"
       };
     });
+    syncLegalPageFromDom();
     return {
       mainHTML: snapshotMain(),
       headerHTML: snapshotHeader(),
       footerHTML: snapshotFooter(),
+      legalPages: cloneLegalContentMap(),
 
       stats: stats,
       cssVars: {
@@ -3996,9 +4145,14 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   }
   function applySettings(s){
     if(!s) return;
-    if(s.mainHTML){ restoreSnapshot(s.mainHTML); }
-    if(s.headerHTML){ restoreRegion(document.querySelector(".site-header, #navbar"), s.headerHTML); }
-    if(s.footerHTML){ restoreRegion(document.querySelector(".site-footer, #footer0001"), s.footerHTML); }
+    if(s.mainHTML || s.headerHTML || s.footerHTML || s.legalPages){
+      restoreSnapshot({
+        mainHTML: s.mainHTML || snapshotMain(),
+        headerHTML: s.headerHTML || snapshotHeader(),
+        footerHTML: s.footerHTML || snapshotFooter(),
+        legalPages: s.legalPages || null
+      });
+    }
 
     if(s.cssVars){ Object.keys(s.cssVars).forEach(function(k){ if(s.cssVars[k]) document.documentElement.style.setProperty(k, s.cssVars[k]); }); }
     if(s.colorScheme && schemes[s.colorScheme]){ applyScheme(schemes[s.colorScheme], s.colorScheme); }
