@@ -4260,7 +4260,6 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     }
     if(!snap) return;
     if(snap.legalPages) restoreLegalContentMap(snap.legalPages);
-    if(snap.productData) restoreProductData(snap.productData);
 
     var main = document.getElementById("main");
     if(main && typeof snap.mainHTML === "string"){
@@ -4278,6 +4277,10 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     if(footer && typeof snap.footerHTML === "string"){
       restoreRegion(footer, snap.footerHTML);
     }
+
+    // Apply canonical product data after the DOM regions are restored so any
+    // data-driven category tabs are synchronized with the restored page.
+    if(snap.productData) restoreProductData(snap.productData);
 
     $all(".editable-text").forEach(function(el){ el.setAttribute("contenteditable", editOn ? "true" : "false"); });
     captureTextBaselines();
