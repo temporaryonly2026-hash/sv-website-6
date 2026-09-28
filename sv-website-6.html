@@ -2282,6 +2282,36 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   }
 
   // ============================================================
+  // LIVE LEGAL PAGE NAVIGATION
+  // The embedded/live page can restore #main from the saved settings payload.
+  // That replacement detaches direct listeners that were attached to the
+  // original #legal-back-button. Use delegated capture here so the button
+  // remains clickable even after any DOM restore/re-render.
+  // In Edit Page mode we deliberately leave the event alone so the editor
+  // can still select/edit the button.
+  // ============================================================
+  document.addEventListener("click", function(e){
+    if(editOn) return;
+    var back = e.target && e.target.closest ? e.target.closest("#legal-back-button") : null;
+    if(!back) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(typeof window.closeLegalPage === "function"){
+      window.closeLegalPage(true);
+    } else {
+      var legalPage = document.getElementById("legal-pages");
+      if(legalPage){
+        legalPage.classList.add("hidden");
+        legalPage.setAttribute("aria-hidden","true");
+      }
+      if(document.documentElement && document.documentElement.classList){
+        document.documentElement.classList.remove("overflow-hidden");
+      }
+      try{ history.pushState({}, "", "#hero"); }catch(err){}
+    }
+  }, true);
+
+  // ============================================================
   // CLICK ROUTING
   // Every clickable UI element — plain text or a full box/frame — always
   // opens the SAME full toolbar (color, image, video, embed, gif, Aa,
