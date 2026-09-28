@@ -1533,6 +1533,28 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             })[key] || key;
         }
 
+        // Dynamic Legal/Support content is rendered after the initial editor scan.
+        // Give every generated element a stable unique ID and explicitly mark
+        // editable text nodes so Edit Page works on every legal/support page,
+        // not only on the static title + eyebrow.
+        function ensureLegalPageEditorTargets(root){
+            if(!root) return;
+            if(typeof window.__assignRuntimeIds === 'function') window.__assignRuntimeIds(root);
+            var textSelector = 'h1,h2,h3,h4,h5,h6,p,span,strong,em,li,label,a,button';
+            if(root.querySelectorAll){
+                root.querySelectorAll(textSelector).forEach(function(el){
+                    if(!el.id && typeof window.__solaceUid === 'function') el.id = window.__solaceUid(el.tagName.toLowerCase());
+                    if(el.id) el.classList.add('editable-text');
+                    if(typeof editOn !== 'undefined') el.setAttribute('contenteditable', editOn ? 'true' : 'false');
+                });
+                root.querySelectorAll('section,div,article,nav,footer,.glass-card').forEach(function(el){
+                    if(!el.id && typeof window.__solaceUid === 'function') el.id = window.__solaceUid(el.tagName.toLowerCase());
+                    if(el.id && (el.matches('section,nav,footer') || el.classList.contains('glass-card'))) el.classList.add('ez-solace-editable');
+                });
+            }
+            if(root.id) root.classList.add('ez-solace-editable');
+        }
+
         function openLegalPage(key, pushHistory=true) {
             syncLegalPageFromDom();
             const page = LEGAL_CONTENT[key];
@@ -1557,9 +1579,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             window.__assignRuntimeIds?.(legalPage);
             if(typeof ensurePageElementIds === 'function') ensurePageElementIds();
             if(typeof ensureSolaceEditorTargets === 'function') ensureSolaceEditorTargets();
-            if(typeof setEditMode === 'function') {
-                document.querySelectorAll('.editable-text').forEach(function(el){ el.setAttribute('contenteditable', editOn ? 'true' : 'false'); });
-            }
+            ensureLegalPageEditorTargets(legalPage);
         }
 
         function closeLegalPage(pushHistory=true) {
@@ -2223,6 +2243,10 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     $("#cpEditPage").classList.toggle("active", editOn);
     $("#cpEditPageState").textContent = editOn ? "ON" : "OFF";
     $all(".editable-text").forEach(function(el){ el.setAttribute("contenteditable", editOn ? "true" : "false"); });
+    var legalPage = document.getElementById("legal-pages");
+    if(legalPage && !legalPage.classList.contains("hidden") && typeof ensureLegalPageEditorTargets === "function"){
+      ensureLegalPageEditorTargets(legalPage);
+    }
     if(!editOn){ hideAllFloating(); }
   }
   $("#cpEditPage").addEventListener("click", function(){ setEditMode(!editOn); });
