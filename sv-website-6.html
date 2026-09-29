@@ -1502,7 +1502,25 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
         function productPriceText(value){
             var text = String(value == null ? '' : value).trim();
-            return text || '0.00';
+            if(!text) return '$ 0.00';
+
+            // Dollar is the default display for bare numeric prices.
+            // Any explicitly entered currency/text format is preserved as-is.
+            if(/^[0-9]+(?:\\.[0-9]+)?$/.test(text)){
+                var numeric = Number(text);
+                return '$ ' + (Number.isFinite(numeric) ? numeric.toFixed(2) : text);
+            }
+            return text;
+        }
+
+        function productEditorPriceText(value){
+            var text = String(value == null ? '' : value).trim();
+            if(!text) return '$ 0.00';
+            if(/^[0-9]+(?:\\.[0-9]+)?$/.test(text)){
+                var numeric = Number(text);
+                return '$ ' + (Number.isFinite(numeric) ? numeric.toFixed(2) : text);
+            }
+            return text;
         }
 
         // Keep the value exactly as entered in the editor while making bare
@@ -4174,7 +4192,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
     renderProductEditorCategories(draft.category);
     productEditorName.value = draft.name || "";
-    productEditorPrice.value = draft.price == null ? "" : String(draft.price);
+    productEditorPrice.value = productEditorPriceText(draft.price);
     productEditorBadge.value = draft.badgeName || "";
     productEditorTagInputs.forEach(function(input, index){
       input.value = Array.isArray(draft.tags) ? (draft.tags[index] || "") : "";
@@ -4223,7 +4241,11 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     }).filter(Boolean).slice(0,3);
 
     var price = String(productEditorPrice.value || "").trim();
-    if(!price) price = "0.00";
+    if(!price) price = "$ 0.00";
+    else if(/^[0-9]+(?:\\.[0-9]+)?$/.test(price)){
+      var numericPrice = Number(price);
+      price = '$ ' + (Number.isFinite(numericPrice) ? numericPrice.toFixed(2) : price);
+    }
 
     var payload = {
       name: name,
