@@ -590,6 +590,40 @@ body.ez-view-only #ezProductManagerModal{display:none !important;}
 #container0035.ez-category-overflow::-webkit-scrollbar{display:block;height:8px;}
 #container0035.ez-category-overflow::-webkit-scrollbar-track{background:rgba(61,38,25,.25);border-radius:999px;}
 #container0035.ez-category-overflow::-webkit-scrollbar-thumb{background:#3D2619;border-radius:999px;}
+/* ---------- Product Guide Editor ---------- */
+#ezProductGuideModal{display:none;position:fixed;inset:0;z-index:2147483480;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:24px;}
+#ezProductGuideModal .box{width:min(880px,94vw);max-height:min(92vh,900px);display:flex;flex-direction:column;background:#16181d;border:1px solid rgba(255,255,255,.14);border-radius:12px;overflow:hidden;color:#f2f1ec;font-family:Inter,system-ui,sans-serif;box-shadow:0 24px 80px rgba(0,0,0,.55);}
+#ezProductGuideModal .box-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.1);}
+#ezProductGuideModal .box-head-title{font-size:14px;font-weight:700;}
+#ezProductGuideModal .box-head-note{font-size:11.5px;color:#9a9d97;margin-top:3px;line-height:1.45;}
+#ezProductGuideModal .box-close{background:none;border:0;color:#9a9d97;font-size:22px;line-height:1;padding:2px 4px;cursor:pointer;}
+#ezProductGuideModal .guide-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:14px 16px 8px;}
+#ezProductGuideModal .guide-tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:7px;margin-bottom:14px;}
+#ezProductGuideModal .guide-tabs button{flex:0 0 auto;padding:8px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.16);background:#101114;color:#9a9d97;font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+#ezProductGuideModal .guide-tabs button.active{background:rgba(201,161,90,.16);border-color:#c9a15a;color:#c9a15a;}
+#ezProductGuideModal .guide-section{background:#101114;border:1px solid rgba(255,255,255,.11);border-radius:10px;padding:12px;margin-bottom:10px;}
+#ezProductGuideModal .guide-section-title{font-size:11px;color:#c9a15a;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:9px;}
+#ezProductGuideModal .guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
+#ezProductGuideModal .guide-field{min-width:0;}
+#ezProductGuideModal .guide-field.full{grid-column:1/-1;}
+#ezProductGuideModal .guide-field label{display:block;font-size:10.5px;font-weight:700;color:#9a9d97;margin:0 0 6px;}
+#ezProductGuideModal .guide-field input[type=text],#ezProductGuideModal .guide-field textarea,#ezProductGuideModal .guide-field input[type=number],#ezProductGuideModal .guide-field input[type=color]{width:100%;box-sizing:border-box;padding:9px 10px;background:#0a0a0a;color:#f2f1ec;border:1px solid rgba(255,255,255,.16);border-radius:8px;font-size:12px;}
+#ezProductGuideModal .guide-field textarea{min-height:84px;resize:vertical;line-height:1.5;}
+#ezProductGuideModal .guide-field input[type=color]{padding:3px;height:38px;}
+#ezProductGuideModal .guide-field input:focus,#ezProductGuideModal .guide-field textarea:focus{outline:none;border-color:#c9a15a;box-shadow:0 0 0 2px rgba(201,161,90,.08);}
+#ezProductGuideModal .metric-row{display:grid;grid-template-columns:minmax(120px,1fr) 74px 1.5fr;gap:8px;align-items:center;margin-bottom:8px;}
+#ezProductGuideModal .metric-row:last-child{margin-bottom:0;}
+#ezProductGuideModal .metric-pair{min-width:0;}
+#ezProductGuideModal .metric-label{font-size:10px;color:#6f716d;margin-bottom:4px;}
+#ezProductGuideModal .metric-row input[type=text],#ezProductGuideModal .metric-row input[type=number]{width:100%;box-sizing:border-box;padding:8px 9px;background:#0a0a0a;color:#f2f1ec;border:1px solid rgba(255,255,255,.16);border-radius:8px;font-size:11.5px;}
+#ezProductGuideModal .metric-row input[type=range]{width:100%;accent-color:#c9a15a;}
+#ezProductGuideModal .metric-note{font-size:9.5px;color:#6f716d;text-align:right;margin-top:2px;}
+#ezProductGuideModal .guide-help{font-size:10px;color:#6f716d;line-height:1.4;margin-top:5px;}
+#ezProductGuideModal .guide-foot{flex:0 0 auto;display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.1);background:#16181d;}
+#ezProductGuideModal .guide-foot button{padding:8px 14px;border-radius:7px;border:1px solid rgba(255,255,255,.16);background:#1c1e23;color:#f2f1ec;font-size:12px;font-weight:600;cursor:pointer;}
+#ezProductGuideModal .guide-foot button.save{background:#c9a15a;border-color:#c9a15a;color:#171310;}
+body.ez-view-only #ezProductGuideModal{display:none!important;}
+@media (max-width:720px){#ezProductGuideModal{padding:12px;}#ezProductGuideModal .box{width:100%;max-height:94vh;}#ezProductGuideModal .guide-grid{grid-template-columns:1fr;}#ezProductGuideModal .metric-row{grid-template-columns:1fr 70px;}#ezProductGuideModal .metric-row .metric-pair:last-child{grid-column:1/-1;}}
 #hero.ez-hero-parallax-proxy{transform:none!important;}
 #heroParallaxLayer{transform-origin:center center;}
 body.ez-view-only #customizePanel, body.ez-view-only #ezMiniToolbar,
@@ -1638,84 +1672,141 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             if (window.__assignRuntimeIds) window.__assignRuntimeIds(wrap);
         }
 
-        function renderRoastProfile(key = 'light') {
-            const data = state.roastProfiles[key];
-            const panel = document.getElementById('roast-display-panel');
-            
-            panel.innerHTML = `
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                    <div class="lg:col-span-7 space-y-6">
-                        <div>
-                            <span class="text-xs text-copper uppercase tracking-widest font-bold block mb-1">${data.subtitle}</span>
-                            <h3 class="font-serif text-3xl sm:text-4xl text-cream-50 font-normal">${data.title}</h3>
-                        </div>
+        function clampProductGuidePercent(value){
+            var n=parseInt(String(value==null?'':value).replace('%',''),10);
+            if(!Number.isFinite(n)) n=0;
+            return Math.max(0,Math.min(100,n));
+        }
 
-                        <p class="text-xs sm:text-sm text-cream-300 font-light leading-relaxed">${data.description}</p>
+        function normalizeProductGuideRecord(record,fallbackKey){
+            var r=record&&typeof record==='object'?record:{};
+            var labels=['Depth','Depth','Usefulness','Reusability'];
+            var legacy=Array.isArray(r.metrics)?r.metrics:[
+                {label:labels[0],percentage:r.acidity},
+                {label:labels[1],percentage:r.body},
+                {label:labels[2],percentage:r.sweetness},
+                {label:labels[3],percentage:r.aroma}
+            ];
+            var metrics=legacy.slice(0,4).map(function(m,i){
+                return {label:String(m&&m.label!=null?m.label:labels[i]),percentage:clampProductGuidePercent(m&&(m.percentage!=null?m.percentage:m.value))};
+            });
+            while(metrics.length<4){var mi=metrics.length;metrics.push({label:labels[mi],percentage:0});}
+            var rec=r.recommended&&typeof r.recommended==='object'?r.recommended:{};
+            var rowLabels=['Use','Best For','Includes'];
+            var icons=['thermometer','sliders','book-open'];
+            var legacyRows=Array.isArray(rec.rows)?rec.rows:[
+                {label:rowLabels[0],value:r.temp||'',icon:icons[0]},
+                {label:rowLabels[1],value:r.grind||'',icon:icons[1]},
+                {label:rowLabels[2],value:r.brew||'',icon:icons[2]}
+            ];
+            var rows=legacyRows.slice(0,3).map(function(row,i){
+                return {label:String(row&&row.label!=null?row.label:rowLabels[i]),value:String(row&&row.value!=null?row.value:''),icon:String(row&&row.icon!=null?row.icon:icons[i])};
+            });
+            while(rows.length<3){var ri=rows.length;rows.push({label:rowLabels[ri],value:'',icon:icons[ri]});}
+            var colors={ebooks:'#D48C46',guides:'#A35D33',templates:'#6E3B1E',dark:'#3D2112'};
+            var out={
+                key:String(r.key||fallbackKey||'guide'),
+                title:String(r.title!=null?r.title:'Untitled Format'),
+                subtitle:String(r.subtitle!=null?r.subtitle:''),
+                description:String(r.description!=null?r.description:''),
+                indicatorColor:String(r.indicatorColor||r.color||colors[fallbackKey]||'#D48C46'),
+                metrics:metrics,
+                recommended:{title:String(rec.title!=null?rec.title:'Recommended Format'),rows:rows}
+            };
+            out.acidity=out.metrics[0].percentage+'%';out.body=out.metrics[1].percentage+'%';out.sweetness=out.metrics[2].percentage+'%';out.aroma=out.metrics[3].percentage+'%';
+            out.temp=out.recommended.rows[0].value;out.grind=out.recommended.rows[1].value;out.brew=out.recommended.rows[2].value;
+            return out;
+        }
 
-                        <!-- Attribute Gauges Grid -->
-                        <div class="grid grid-cols-2 gap-4 pt-2">
-                            <div>
-                                <div class="flex justify-between text-xs text-cream-300 mb-1">
-                                    <span>Depth</span>
-                                    <span class="text-copper font-bold">${data.acidity}</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-espresso-950 rounded-full overflow-hidden">
-                                    <div class="h-full bg-copper transition-all duration-700" style="width: ${data.acidity}"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-xs text-cream-300 mb-1">
-                                    <span>Depth</span>
-                                    <span class="text-copper font-bold">${data.body}</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-espresso-950 rounded-full overflow-hidden">
-                                    <div class="h-full bg-copper transition-all duration-700" style="width: ${data.body}"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-xs text-cream-300 mb-1">
-                                    <span>Usefulness</span>
-                                    <span class="text-copper font-bold">${data.sweetness}</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-espresso-950 rounded-full overflow-hidden">
-                                    <div class="h-full bg-copper transition-all duration-700" style="width: ${data.sweetness}"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-xs text-cream-300 mb-1">
-                                    <span>Reusability</span>
-                                    <span class="text-copper font-bold">${data.aroma}</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-espresso-950 rounded-full overflow-hidden">
-                                    <div class="h-full bg-copper transition-all duration-700" style="width: ${data.aroma}"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        function ensureProductGuideDataArchitecture(){
+            if(!state.roastProfiles||typeof state.roastProfiles!=='object') state.roastProfiles={};
+            var defaults={ebooks:'#D48C46',guides:'#A35D33',templates:'#6E3B1E',dark:'#3D2112'};
+            Object.keys(defaults).forEach(function(key){
+                var current=state.roastProfiles[key]||{};
+                state.roastProfiles[key]=normalizeProductGuideRecord(Object.assign({},current,{key:key,indicatorColor:current.indicatorColor||defaults[key]}),key);
+            });
+            if(!state.activeProductGuide||!state.roastProfiles[state.activeProductGuide]) state.activeProductGuide='ebooks';
+        }
+        ensureProductGuideDataArchitecture();
 
-                    <!-- Recommended Brew Setup Sidecard -->
-                    <div class="lg:col-span-5 bg-espresso-950/70 p-6 rounded-xl border border-copper/15 space-y-4">
-                        <h4 class="font-serif text-lg text-cream-50 font-semibold border-b border-copper/15 pb-2">Recommended Format</h4>
-                        <div class="space-y-3 text-xs">
-                            <div class="flex items-center gap-3 text-cream-200">
-                                <i data-lucide="thermometer" class="w-4 h-4 text-copper"></i>
-                                <span>Use: <strong class="text-cream-50">${data.temp}</strong></span>
-                            </div>
-                            <div class="flex items-center gap-3 text-cream-200">
-                                <i data-lucide="sliders" class="w-4 h-4 text-copper"></i>
-                                <span>Best For: <strong class="text-cream-50">${data.grind}</strong></span>
-                            </div>
-                            <div class="flex items-center gap-3 text-cream-200">
-                                <i data-lucide="book-open" class="w-4 h-4 text-copper"></i>
-                                <span>Includes: <strong class="text-cream-50">${data.brew}</strong></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-            window.__assignRuntimeIds?.();
-            if (document.documentElement.getAttribute("data-ez-color-scheme") === "scheme2" && window.applyIvorySageDirectOverrides) window.applyIvorySageDirectOverrides();
+        function syncProductGuideTabs(activeKey){
+            ensureProductGuideDataArchitecture();
+            document.querySelectorAll('.roast-tab').forEach(function(tab){
+                var key=tab.dataset.roast,data=state.roastProfiles[key];
+                if(!data)return;
+                tab.classList.toggle('active',key===activeKey);
+                tab.classList.toggle('border-copper',key===activeKey);
+                tab.classList.toggle('border-copper/15',key!==activeKey);
+                var spans=tab.querySelectorAll('span');
+                if(spans[0])spans[0].style.backgroundColor=data.indicatorColor;
+                if(spans[1])spans[1].textContent=data.title;
+                if(spans[2])spans[2].textContent=data.subtitle;
+            });
+        }
+
+        function renderRoastProfile(key='ebooks'){
+            ensureProductGuideDataArchitecture();
+            var targetKey=state.roastProfiles[key]?key:'ebooks';
+            var data=state.roastProfiles[targetKey];
+            state.activeProductGuide=targetKey;
+            var panel=document.getElementById('roast-display-panel');
+            if(!panel)return;
+            panel.innerHTML='';
+
+            var layout=document.createElement('div');
+            layout.className='grid grid-cols-1 lg:grid-cols-12 gap-8 items-center';
+
+            var left=document.createElement('div');
+            left.className='lg:col-span-7 space-y-6';
+            var headingWrap=document.createElement('div');
+            var sub=document.createElement('span');
+            sub.className='text-xs text-copper uppercase tracking-widest font-bold block mb-1';
+            sub.textContent=data.subtitle;
+            var title=document.createElement('h3');
+            title.className='font-serif text-3xl sm:text-4xl text-cream-50 font-normal';
+            title.textContent=data.title;
+            headingWrap.appendChild(sub);headingWrap.appendChild(title);
+
+            var desc=document.createElement('p');
+            desc.className='text-xs sm:text-sm text-cream-300 font-light leading-relaxed';
+            desc.textContent=data.description;
+
+            var metricsGrid=document.createElement('div');
+            metricsGrid.className='grid grid-cols-2 gap-4 pt-2';
+            data.metrics.forEach(function(metric){
+                var item=document.createElement('div');
+                var line=document.createElement('div');
+                line.className='flex justify-between text-xs text-cream-300 mb-1';
+                var label=document.createElement('span');label.textContent=metric.label;
+                var pct=document.createElement('span');pct.className='text-copper font-bold';
+                var n=clampProductGuidePercent(metric.percentage);pct.textContent=n+'%';
+                line.appendChild(label);line.appendChild(pct);
+                var track=document.createElement('div');track.className='w-full h-1.5 bg-espresso-950 rounded-full overflow-hidden';
+                var fill=document.createElement('div');fill.className='h-full bg-copper transition-all duration-700';fill.style.width=n+'%';
+                track.appendChild(fill);item.appendChild(line);item.appendChild(track);metricsGrid.appendChild(item);
+            });
+
+            left.appendChild(headingWrap);left.appendChild(desc);left.appendChild(metricsGrid);
+
+            var side=document.createElement('div');
+            side.className='lg:col-span-5 bg-espresso-950/70 p-6 rounded-xl border border-copper/15 space-y-4';
+            var sideTitle=document.createElement('h4');
+            sideTitle.className='font-serif text-lg text-cream-50 font-semibold border-b border-copper/15 pb-2';
+            sideTitle.textContent=data.recommended.title;
+            var rows=document.createElement('div');rows.className='space-y-3 text-xs';
+            data.recommended.rows.forEach(function(row){
+                var rowWrap=document.createElement('div');rowWrap.className='flex items-center gap-3 text-cream-200';
+                var icon=document.createElement('i');icon.setAttribute('data-lucide',row.icon||'circle');icon.className='w-4 h-4 text-copper';
+                var text=document.createElement('span');text.textContent=row.label+': ';
+                var strong=document.createElement('strong');strong.className='text-cream-50';strong.textContent=row.value;
+                text.appendChild(strong);rowWrap.appendChild(icon);rowWrap.appendChild(text);rows.appendChild(rowWrap);
+            });
+            side.appendChild(sideTitle);side.appendChild(rows);
+            layout.appendChild(left);layout.appendChild(side);panel.appendChild(layout);
+
+            syncProductGuideTabs(targetKey);
+            lucide.createIcons();window.__assignRuntimeIds?.();
+            if(document.documentElement.getAttribute('data-ez-color-scheme')==='scheme2'&&window.applyIvorySageDirectOverrides)window.applyIvorySageDirectOverrides();
         }
 
         function renderOrigins() {
@@ -2070,7 +2161,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
         window.addEventListener('DOMContentLoaded', () => {
             renderProducts();
-            renderRoastProfile('ebooks');
+            renderRoastProfile(state.activeProductGuide || 'ebooks');
             renderOrigins();
             renderReviews();
             window.__assignRuntimeIds?.();
@@ -2135,13 +2226,15 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
             // Product Format Buttons
             document.querySelectorAll('.roast-tab').forEach(tab => {
+                if(tab.getAttribute('data-ez-guide-bound')) return;
+                tab.setAttribute('data-ez-guide-bound','true');
                 tab.addEventListener('click', (e) => {
-                    const target = e.currentTarget;
-                    document.querySelectorAll('.roast-tab').forEach(t => t.classList.replace('border-copper', 'border-copper/15'));
-                    target.classList.replace('border-copper/15', 'border-copper');
-                    renderRoastProfile(target.dataset.roast);
+                    const target=e.currentTarget;
+                    state.activeProductGuide=target.dataset.roast || 'ebooks';
+                    renderRoastProfile(state.activeProductGuide);
                 });
             });
+            syncProductGuideTabs(state.activeProductGuide || 'ebooks');
 
             // Mobile Menu
             const mobileBtn = document.getElementById('mobile-menu-btn');
@@ -2561,6 +2654,26 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   </div>
 </div>
 
+<div id="ezProductGuideModal" aria-hidden="true">
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="ezProductGuideTitle">
+    <div class="box-head">
+      <div>
+        <div class="box-head-title" id="ezProductGuideTitle">Edit Product Guide</div>
+        <div class="box-head-note">Configure the format tabs, descriptions, percentage gauges, and Recommended Format details.</div>
+      </div>
+      <button type="button" class="box-close" id="ezProductGuideClose" aria-label="Close Product Guide Editor">×</button>
+    </div>
+    <div class="guide-body">
+      <div class="guide-tabs" id="ezProductGuideTabs"></div>
+      <div id="ezProductGuideEditorContent"></div>
+    </div>
+    <div class="guide-foot">
+      <button type="button" id="ezProductGuideCancel">Cancel</button>
+      <button type="button" class="save" id="ezProductGuideSave">Save Product Guide</button>
+    </div>
+  </div>
+</div>
+
 <div id="ezProductManagerModal" aria-hidden="true">
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="ezProductManagerTitle">
     <div class="box-head">
@@ -2615,6 +2728,11 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       <label>Digital Products</label>
       <button class="cp-action-btn cp-action-primary" id="cpEditDigitalProducts" type="button">Edit Digital Products</button>
       <p class="cp-note">Manage product categories and product display cards in one place.</p>
+    </div>
+    <div class="cp-group" style="margin-bottom:12px;">
+      <label>Product Guide</label>
+      <button class="cp-action-btn cp-action-primary" id="cpEditProductGuide" type="button">Edit Product Guide</button>
+      <p class="cp-note">Configure format tabs, descriptions, percentage gauges, and Recommended Format details.</p>
     </div>
 
     <div class="cp-group">
@@ -4469,6 +4587,13 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     }
   });
 
+  $("#cpEditProductGuide").addEventListener("click",openProductGuideEditor);
+  $("#ezProductGuideClose").addEventListener("click",closeProductGuideEditor);
+  $("#ezProductGuideCancel").addEventListener("click",closeProductGuideEditor);
+  $("#ezProductGuideSave").addEventListener("click",saveProductGuideEditor);
+  $("#ezProductGuideModal").addEventListener("click",function(e){if(e.target===productGuideModal)closeProductGuideEditor();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&productGuideModal&&productGuideModal.style.display!=="none"){e.preventDefault();closeProductGuideEditor();}});
+
   // ============================================================
   // CUSTOM CODE / EFFECTS MANAGER
   // ============================================================
@@ -4969,6 +5094,118 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     if(cpRedoBtn) cpRedoBtn.disabled = historyIndex >= history.length - 1;
   }
 
+  var productGuideModal=$("#ezProductGuideModal");
+  var productGuideEditorActiveKey="ebooks";
+  var productGuideEditorDirty=false;
+  const PRODUCT_GUIDE_DATA_VERSION=1;
+
+  function cloneProductGuideProfiles(){
+    ensureProductGuideDataArchitecture();
+    var out={};
+    Object.keys(state.roastProfiles).forEach(function(key){
+      var p=normalizeProductGuideRecord(state.roastProfiles[key],key);
+      out[key]={key:key,title:p.title,subtitle:p.subtitle,description:p.description,indicatorColor:p.indicatorColor,metrics:p.metrics.map(function(m){return {label:m.label,percentage:clampProductGuidePercent(m.percentage)};}),recommended:{title:p.recommended.title,rows:p.recommended.rows.map(function(row){return {label:row.label,value:row.value,icon:row.icon};})}};
+    });
+    return out;
+  }
+
+  function productGuideDataSnapshot(){
+    return {version:PRODUCT_GUIDE_DATA_VERSION,activeKey:state.activeProductGuide||'ebooks',profiles:cloneProductGuideProfiles()};
+  }
+
+  function restoreProductGuideData(saved){
+    if(!saved||typeof saved!=='object')return;
+    if(saved.profiles&&typeof saved.profiles==='object'){
+      Object.keys(saved.profiles).forEach(function(key){state.roastProfiles[key]=normalizeProductGuideRecord(saved.profiles[key],key);});
+    }
+    ensureProductGuideDataArchitecture();
+    state.activeProductGuide=saved.activeKey&&state.roastProfiles[saved.activeKey]?saved.activeKey:'ebooks';
+    syncProductGuideTabs(state.activeProductGuide);
+  }
+
+  function buildProductGuideEditor(){
+    ensureProductGuideDataArchitecture();
+    var tabs=$("#ezProductGuideTabs"),content=$("#ezProductGuideEditorContent");
+    if(!tabs||!content)return;
+    var active=productGuideEditorActiveKey||state.activeProductGuide||'ebooks';
+    tabs.innerHTML='';
+    Object.keys(state.roastProfiles).forEach(function(key){
+      var data=state.roastProfiles[key],btn=document.createElement('button');
+      btn.type='button';btn.textContent=data.title;btn.className=key===active?'active':'';
+      btn.addEventListener('click',function(){if(productGuideEditorDirty)saveProductGuideEditorToDraft();productGuideEditorActiveKey=key;productGuideEditorDirty=false;buildProductGuideEditor();});
+      tabs.appendChild(btn);
+    });
+
+    var p=normalizeProductGuideRecord(state.roastProfiles[active],active);
+    content.innerHTML='';
+    function textInput(value){var el=document.createElement('input');el.type='text';el.value=value==null?'':String(value);return el;}
+    function addField(grid,label,input,full){var holder=document.createElement('div');holder.className='guide-field'+(full?' full':'');var lab=document.createElement('label');lab.textContent=label;holder.appendChild(lab);holder.appendChild(input);grid.appendChild(holder);return input;}
+
+    var basic=document.createElement('div');basic.className='guide-section';basic.innerHTML='<div class="guide-section-title">Format Tab</div>';
+    var grid=document.createElement('div');grid.className='guide-grid';
+    var title=textInput(p.title);title.id='ezPGTitleInput';
+    var subtitle=textInput(p.subtitle);subtitle.id='ezPGSubtitleInput';
+    var desc=document.createElement('textarea');desc.id='ezPGDescriptionInput';desc.value=p.description;
+    var color=document.createElement('input');color.type='color';color.id='ezPGIndicatorColorInput';color.value=/^#[0-9a-f]{6}$/i.test(p.indicatorColor)?p.indicatorColor:'#C87A4B';
+    addField(grid,'Format Name / Tab Title',title,false);addField(grid,'Tab Subtitle',subtitle,false);addField(grid,'Description',desc,true);addField(grid,'Indicator Color',color,false);
+    var help=document.createElement('div');help.className='guide-help';help.textContent='Controls the small indicator on the format tab.';grid.appendChild(help);
+    basic.appendChild(grid);content.appendChild(basic);
+
+    var metricSection=document.createElement('div');metricSection.className='guide-section';metricSection.innerHTML='<div class="guide-section-title">Percentage Gauges</div>';
+    p.metrics.forEach(function(metric,index){
+      var row=document.createElement('div');row.className='metric-row';
+      var lp=document.createElement('div');lp.className='metric-pair';
+      var ll=document.createElement('div');ll.className='metric-label';ll.textContent='Gauge Label';
+      var li=textInput(metric.label);li.id='ezPGMetricLabel'+(index+1);lp.appendChild(ll);lp.appendChild(li);
+      var pp=document.createElement('div');pp.className='metric-pair';
+      var pl=document.createElement('div');pl.className='metric-label';pl.textContent='%';
+      var pi=document.createElement('input');pi.type='number';pi.min='0';pi.max='100';pi.step='1';pi.value=clampProductGuidePercent(metric.percentage);pi.id='ezPGMetricPct'+(index+1);pp.appendChild(pl);pp.appendChild(pi);
+      var rp=document.createElement('div');rp.className='metric-pair';
+      var range=document.createElement('input');range.type='range';range.min='0';range.max='100';range.step='1';range.value=clampProductGuidePercent(metric.percentage);range.id='ezPGMetricRange'+(index+1);
+      var note=document.createElement('div');note.className='metric-note';note.textContent=range.value+'%';rp.appendChild(range);rp.appendChild(note);
+      range.addEventListener('input',function(){pi.value=range.value;note.textContent=range.value+'%';productGuideEditorDirty=true;});
+      pi.addEventListener('input',function(){var v=clampProductGuidePercent(pi.value);pi.value=v;range.value=v;note.textContent=v+'%';productGuideEditorDirty=true;});
+      li.addEventListener('input',function(){productGuideEditorDirty=true;});
+      row.appendChild(lp);row.appendChild(pp);row.appendChild(rp);metricSection.appendChild(row);
+    });
+    content.appendChild(metricSection);
+
+    var rec=document.createElement('div');rec.className='guide-section';rec.innerHTML='<div class="guide-section-title">Recommended Format</div>';
+    var rg=document.createElement('div');rg.className='guide-grid';
+    var rt=textInput(p.recommended.title);rt.id='ezPGRecommendedTitle';addField(rg,'Panel Heading',rt,true);rt.addEventListener('input',function(){productGuideEditorDirty=true;});
+    p.recommended.rows.forEach(function(row,index){
+      var rl=textInput(row.label);rl.id='ezPGRecLabel'+(index+1);
+      var rv=textInput(row.value);rv.id='ezPGRecValue'+(index+1);
+      var ri=textInput(row.icon);ri.id='ezPGRecIcon'+(index+1);ri.placeholder='Lucide icon name';
+      addField(rg,'Row '+(index+1)+' Label',rl,false);addField(rg,'Row '+(index+1)+' Value',rv,false);addField(rg,'Row '+(index+1)+' Icon',ri,false);
+      [rl,rv,ri].forEach(function(el){el.addEventListener('input',function(){productGuideEditorDirty=true;});});
+    });
+    rec.appendChild(rg);content.appendChild(rec);
+    [title,subtitle,desc,color].forEach(function(el){el.addEventListener('input',function(){productGuideEditorDirty=true;});});
+  }
+
+  function saveProductGuideEditorToDraft(){
+    if(!productGuideEditorActiveKey)return;
+    var p=normalizeProductGuideRecord(state.roastProfiles[productGuideEditorActiveKey],productGuideEditorActiveKey);
+    function val(id){var el=document.getElementById(id);return el?String(el.value||'').trim():'';}
+    function pct(id){var el=document.getElementById(id);return clampProductGuidePercent(el?el.value:0);}
+    p.title=val('ezPGTitleInput')||p.title;p.subtitle=val('ezPGSubtitleInput');p.description=val('ezPGDescriptionInput');p.indicatorColor=val('ezPGIndicatorColorInput')||p.indicatorColor;
+    p.metrics=p.metrics.map(function(m,i){return {label:val('ezPGMetricLabel'+(i+1))||m.label,percentage:pct('ezPGMetricPct'+(i+1))};});
+    p.recommended.title=val('ezPGRecommendedTitle')||p.recommended.title;
+    p.recommended.rows=p.recommended.rows.map(function(row,i){return {label:val('ezPGRecLabel'+(i+1))||row.label,value:val('ezPGRecValue'+(i+1)),icon:val('ezPGRecIcon'+(i+1))||row.icon};});
+    state.roastProfiles[productGuideEditorActiveKey]=normalizeProductGuideRecord(p,productGuideEditorActiveKey);
+  }
+
+  function openProductGuideEditor(){ensureProductGuideDataArchitecture();productGuideEditorActiveKey=state.activeProductGuide||'ebooks';productGuideEditorDirty=false;buildProductGuideEditor();productGuideModal.style.display='flex';productGuideModal.setAttribute('aria-hidden','false');}
+  function closeProductGuideEditor(){if(!productGuideModal)return;productGuideModal.style.display='none';productGuideModal.setAttribute('aria-hidden','true');productGuideEditorDirty=false;}
+  function saveProductGuideEditor(){
+    if(productGuideEditorDirty)saveProductGuideEditorToDraft();
+    state.activeProductGuide=productGuideEditorActiveKey||'ebooks';
+    renderRoastProfile(state.activeProductGuide);syncProductGuideTabs(state.activeProductGuide);
+    pushHistory();markUnsaved();closeProductGuideEditor();
+    if(typeof showToast==='function')showToast('Product Guide updated.');
+  }
+
   function snapshotPageForHistory(){
     syncLegalPageFromDom();
     return {
@@ -4976,7 +5213,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       headerHTML: snapshotHeader(),
       footerHTML: snapshotFooter(),
       legalPages: cloneLegalContentMap(),
-      productData: productDataSnapshot()
+      productData: productDataSnapshot(),
+      productGuideData: productGuideDataSnapshot()
     };
   }
 
@@ -5035,6 +5273,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     // Apply canonical product data after the DOM regions are restored so any
     // data-driven category tabs are synchronized with the restored page.
     if(snap.productData) restoreProductData(snap.productData);
+    if(snap.productGuideData) restoreProductGuideData(snap.productGuideData);
     if(typeof renderProductManager === "function" && productManagerModal && productManagerModal.style.display !== "none") renderProductManager();
 
     $all(".editable-text").forEach(function(el){ el.setAttribute("contenteditable", editOn ? "true" : "false"); });
@@ -5114,6 +5353,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       footerHTML: snapshotFooter(),
       legalPages: cloneLegalContentMap(),
       productData: productDataSnapshot(),
+      productGuideData: productGuideDataSnapshot(),
 
       stats: stats,
       cssVars: {
@@ -5137,13 +5377,14 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   }
   function applySettings(s){
     if(!s) return;
-    if(s.mainHTML || s.headerHTML || s.footerHTML || s.legalPages){
+    if(s.mainHTML || s.headerHTML || s.footerHTML || s.legalPages || s.productData || s.productGuideData){
       restoreSnapshot({
         mainHTML: s.mainHTML || snapshotMain(),
         headerHTML: s.headerHTML || snapshotHeader(),
         footerHTML: s.footerHTML || snapshotFooter(),
         legalPages: s.legalPages || null,
-        productData: s.productData || null
+        productData: s.productData || null,
+        productGuideData: s.productGuideData || null
       });
     }
 
@@ -5386,6 +5627,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     setEditMode(false);
     ensurePageElementIds();
     ensureSolaceEditorTargets();
+    if(typeof ensureProductGuideDataArchitecture==="function") ensureProductGuideDataArchitecture();
     captureTextBaselines();
 
     buildSectionsList();
