@@ -494,6 +494,10 @@ body:not(.ez-edit-on) .item-actions{display:none !important;}
   display:flex;align-items:center;gap:7px;overflow-x:auto;padding-bottom:5px;
 }
 #ezProductManagerModal .category-bar::-webkit-scrollbar{height:5px;}
+#ezProductManagerModal .category-bar.ez-category-overflow{scrollbar-width:thin;scrollbar-color:#3D2619 transparent;padding-bottom:8px;}
+#ezProductManagerModal .category-bar.ez-category-overflow::-webkit-scrollbar{display:block;height:7px;}
+#ezProductManagerModal .category-bar.ez-category-overflow::-webkit-scrollbar-track{background:rgba(61,38,25,.25);border-radius:999px;}
+#ezProductManagerModal .category-bar.ez-category-overflow::-webkit-scrollbar-thumb{background:#3D2619;border-radius:999px;}
 #ezProductManagerModal .category-bar button{
   flex:0 0 auto;padding:7px 11px;border-radius:8px;
   border:1px solid rgba(255,255,255,.16);background:#101114;
@@ -566,6 +570,13 @@ body.ez-view-only #ezProductManagerModal{display:none !important;}
   #ezCustomCodeModal .effect-code{min-height:160px;}
 }
 
+/* ---------- Featured Product Category Tabs ---------- */
+#container0035{min-width:0;width:100%;max-width:min(560px,100%);flex:0 1 560px;}
+#container0035 .filter-btn{flex:0 0 auto;white-space:nowrap;}
+#container0035.ez-category-overflow{overflow-x:auto!important;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#3D2619 transparent;padding-bottom:8px;}
+#container0035.ez-category-overflow::-webkit-scrollbar{display:block;height:8px;}
+#container0035.ez-category-overflow::-webkit-scrollbar-track{background:rgba(61,38,25,.25);border-radius:999px;}
+#container0035.ez-category-overflow::-webkit-scrollbar-thumb{background:#3D2619;border-radius:999px;}
 #hero.ez-hero-parallax-proxy{transform:none!important;}
 #heroParallaxLayer{transform-origin:center center;}
 body.ez-view-only #customizePanel, body.ez-view-only #ezMiniToolbar,
@@ -1340,7 +1351,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             var description = String(p.description != null ? p.description : '');
             var rating = String(p.rating != null ? p.rating : '0');
             var totalReviews = String(p.totalReviews != null ? p.totalReviews : (p.reviewsCount != null ? p.reviewsCount : '0'));
-            var price = Number.isFinite(Number(p.price)) ? Number(p.price) : 0;
+            // Product Price is a free-form text value so any currency/sign
+            // format can be entered and reflected without a hard-coded symbol.
+            var price = String(p.price != null ? p.price : '').trim();
             var buttonText = String(p.buttonText != null ? p.buttonText : 'Buy Now');
             var buttonLink = String(p.buttonLink != null ? p.buttonLink : (p.url != null ? p.url : '#'));
             var openNewTab = p.openNewTab !== false;
@@ -1474,6 +1487,20 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             }, 3500);
         }
 
+        function productPriceText(value){
+            var text = String(value == null ? '' : value).trim();
+            return text || '0.00';
+        }
+
+        // Keep the value exactly as entered in the editor while making bare
+        // external domains such as "youtube.com" work when clicked.
+        function productLinkHref(value){
+            var raw = String(value == null ? '' : value).trim();
+            if(!raw || raw === '#') return '#';
+            if(/^(#|\/|\?|https?:|mailto:|tel:)/i.test(raw)) return raw;
+            return 'https://' + raw;
+        }
+
         function renderProducts(filter = 'all') {
             ensureProductDataArchitecture();
             const grid = document.getElementById('product-grid');
@@ -1515,7 +1542,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
                                     <span class="font-bold text-cream-100">${p.rating}</span>
                                     <span class="text-cream-400 font-light">(${p.totalReviews})</span>
                                 </div>
-                                <span class="font-serif text-xl font-bold text-copper">$${p.price.toFixed(2)}</span>
+                                <span class="font-serif text-xl font-bold text-copper">${productPriceText(p.price)}</span>
                             </div>
 
                             <h3 class="font-serif text-2xl text-cream-50 font-semibold">${p.name}</h3>
@@ -1528,7 +1555,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
                     </div>
 
                     <div class="p-6 pt-0">
-                        <a href="${p.buttonLink}"${newTabAttrs}
+                        <a href="${productLinkHref(p.buttonLink)}"${newTabAttrs}
                            class="w-full py-3 bg-espresso-700 hover:bg-copper hover:text-espresso-950 text-cream-100 font-semibold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 group/btn">
                             <i data-lucide="external-link" class="w-4 h-4 text-copper group-hover/btn:text-espresso-950"></i>
                             <span>${p.buttonText}</span>
@@ -1546,6 +1573,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             const wrap = document.getElementById('container0035');
             if (!wrap) return;
             const categories = state.productCategories;
+            // Four tabs remain visible; the fifth and later tabs switch the strip
+            // into horizontal scrolling instead of stacking or squeezing.
+            wrap.classList.toggle('ez-category-overflow', categories.length > 4);
             const existing = Array.from(wrap.querySelectorAll('.filter-btn'));
 
             categories.forEach((cat, index) => {
@@ -1743,7 +1773,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
                     <div>
                         <span class="text-xs text-copper uppercase tracking-widest font-bold block mb-1">${p.badgeName}</span>
                         <h3 class="font-serif text-3xl text-cream-50 font-semibold">${p.name}</h3>
-                        <p class="font-serif text-2xl text-copper font-bold mt-2">$${p.price.toFixed(2)}</p>
+                        <p class="font-serif text-2xl text-copper font-bold mt-2">${productPriceText(p.price)}</p>
                     </div>
 
                     <p class="text-xs text-cream-300 font-light leading-relaxed">${p.description}</p>
@@ -1757,7 +1787,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
                     <a href="${p.buttonLink}"${newTabAttrs}
                        class="w-full py-3.5 bg-copper hover:bg-copper-light text-espresso-950 font-semibold rounded-xl text-xs uppercase tracking-wider transition-all shadow-glow flex items-center justify-center gap-2">
-                        <span>${p.buttonText} • $${p.price.toFixed(2)}</span>
+                        <span>${p.buttonText} • ${productPriceText(p.price)}</span>
                         <i data-lucide="external-link" class="w-4 h-4"></i>
                     </a>
                 </div>
@@ -2436,7 +2466,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
         </div>
         <div class="editor-field">
           <label for="ezProductPriceInput">Product Price</label>
-          <input type="number" id="ezProductPriceInput" min="0" step="0.01" inputmode="decimal" placeholder="0.00">
+          <input type="text" id="ezProductPriceInput" autocomplete="off" placeholder="$ 40.00" aria-label="Product Price">
         </div>
         <div class="editor-field">
           <label for="ezProductBadgeInput">Badge Name</label>
@@ -4131,7 +4161,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
     renderProductEditorCategories(draft.category);
     productEditorName.value = draft.name || "";
-    productEditorPrice.value = Number.isFinite(Number(draft.price)) ? Number(draft.price).toFixed(2) : "0.00";
+    productEditorPrice.value = draft.price == null ? "" : String(draft.price);
     productEditorBadge.value = draft.badgeName || "";
     productEditorTagInputs.forEach(function(input, index){
       input.value = Array.isArray(draft.tags) ? (draft.tags[index] || "") : "";
@@ -4179,8 +4209,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       return (input.value || "").trim();
     }).filter(Boolean).slice(0,3);
 
-    var rawPrice = parseFloat(productEditorPrice.value);
-    var price = Number.isFinite(rawPrice) && rawPrice >= 0 ? rawPrice : 0;
+    var price = String(productEditorPrice.value || "").trim();
+    if(!price) price = "0.00";
 
     var payload = {
       name: name,
@@ -4240,6 +4270,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     productManagerActiveCategory = active;
 
     productManagerCategoryBar.innerHTML = "";
+    productManagerCategoryBar.classList.toggle("ez-category-overflow", state.productCategories.length > 4);
     state.productCategories.forEach(function(cat){
       var btn = document.createElement("button");
       btn.type = "button";
