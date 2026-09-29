@@ -571,9 +571,22 @@ body.ez-view-only #ezProductManagerModal{display:none !important;}
 }
 
 /* ---------- Featured Product Category Tabs ---------- */
-#container0035{min-width:0;width:100%;max-width:min(560px,100%);flex:0 1 560px;}
+#container0035{
+  min-width:0;width:100%;max-width:min(560px,100%);flex:0 1 560px;
+  margin-left:auto;
+  justify-content:flex-end;
+  overflow-x:hidden;
+  overflow-y:hidden;
+}
 #container0035 .filter-btn{flex:0 0 auto;white-space:nowrap;}
-#container0035.ez-category-overflow{overflow-x:auto!important;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#3D2619 transparent;padding-bottom:8px;}
+#container0035.ez-category-overflow{
+  justify-content:flex-start;
+  overflow-x:auto!important;
+  overflow-y:hidden;
+  scrollbar-width:thin;
+  scrollbar-color:#3D2619 transparent;
+  padding-bottom:8px;
+}
 #container0035.ez-category-overflow::-webkit-scrollbar{display:block;height:8px;}
 #container0035.ez-category-overflow::-webkit-scrollbar-track{background:rgba(61,38,25,.25);border-radius:999px;}
 #container0035.ez-category-overflow::-webkit-scrollbar-thumb{background:#3D2619;border-radius:999px;}
