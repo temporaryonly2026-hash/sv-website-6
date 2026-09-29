@@ -5097,6 +5097,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   var productGuideModal=$("#ezProductGuideModal");
   var productGuideEditorActiveKey="ebooks";
   var productGuideEditorDirty=false;
+  var productGuideEditorDraft=null;
   const PRODUCT_GUIDE_DATA_VERSION=1;
 
   function cloneProductGuideProfiles(){
@@ -5128,15 +5129,16 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     var tabs=$("#ezProductGuideTabs"),content=$("#ezProductGuideEditorContent");
     if(!tabs||!content)return;
     var active=productGuideEditorActiveKey||state.activeProductGuide||'ebooks';
+    var sourceProfiles=productGuideEditorDraft||cloneProductGuideProfiles();
     tabs.innerHTML='';
-    Object.keys(state.roastProfiles).forEach(function(key){
-      var data=state.roastProfiles[key],btn=document.createElement('button');
+    Object.keys(sourceProfiles).forEach(function(key){
+      var data=sourceProfiles[key],btn=document.createElement('button');
       btn.type='button';btn.textContent=data.title;btn.className=key===active?'active':'';
       btn.addEventListener('click',function(){if(productGuideEditorDirty)saveProductGuideEditorToDraft();productGuideEditorActiveKey=key;productGuideEditorDirty=false;buildProductGuideEditor();});
       tabs.appendChild(btn);
     });
 
-    var p=normalizeProductGuideRecord(state.roastProfiles[active],active);
+    var p=normalizeProductGuideRecord(sourceProfiles[active],active);
     content.innerHTML='';
     function textInput(value){var el=document.createElement('input');el.type='text';el.value=value==null?'':String(value);return el;}
     function addField(grid,label,input,full){var holder=document.createElement('div');holder.className='guide-field'+(full?' full':'');var lab=document.createElement('label');lab.textContent=label;holder.appendChild(lab);holder.appendChild(input);grid.appendChild(holder);return input;}
@@ -5186,23 +5188,46 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
   function saveProductGuideEditorToDraft(){
     if(!productGuideEditorActiveKey)return;
-    var p=normalizeProductGuideRecord(state.roastProfiles[productGuideEditorActiveKey],productGuideEditorActiveKey);
+    if(!productGuideEditorDraft) productGuideEditorDraft=cloneProductGuideProfiles();
+    var p=normalizeProductGuideRecord(productGuideEditorDraft[productGuideEditorActiveKey],productGuideEditorActiveKey);
     function val(id){var el=document.getElementById(id);return el?String(el.value||'').trim():'';}
     function pct(id){var el=document.getElementById(id);return clampProductGuidePercent(el?el.value:0);}
     p.title=val('ezPGTitleInput')||p.title;p.subtitle=val('ezPGSubtitleInput');p.description=val('ezPGDescriptionInput');p.indicatorColor=val('ezPGIndicatorColorInput')||p.indicatorColor;
     p.metrics=p.metrics.map(function(m,i){return {label:val('ezPGMetricLabel'+(i+1))||m.label,percentage:pct('ezPGMetricPct'+(i+1))};});
     p.recommended.title=val('ezPGRecommendedTitle')||p.recommended.title;
     p.recommended.rows=p.recommended.rows.map(function(row,i){return {label:val('ezPGRecLabel'+(i+1))||row.label,value:val('ezPGRecValue'+(i+1)),icon:val('ezPGRecIcon'+(i+1))||row.icon};});
-    state.roastProfiles[productGuideEditorActiveKey]=normalizeProductGuideRecord(p,productGuideEditorActiveKey);
+    productGuideEditorDraft[productGuideEditorActiveKey]=normalizeProductGuideRecord(p,productGuideEditorActiveKey);
   }
 
-  function openProductGuideEditor(){ensureProductGuideDataArchitecture();productGuideEditorActiveKey=state.activeProductGuide||'ebooks';productGuideEditorDirty=false;buildProductGuideEditor();productGuideModal.style.display='flex';productGuideModal.setAttribute('aria-hidden','false');}
-  function closeProductGuideEditor(){if(!productGuideModal)return;productGuideModal.style.display='none';productGuideModal.setAttribute('aria-hidden','true');productGuideEditorDirty=false;}
+  function openProductGuideEditor(){
+    ensureProductGuideDataArchitecture();
+    productGuideEditorActiveKey=state.activeProductGuide||'ebooks';
+    productGuideEditorDirty=false;
+    productGuideEditorDraft=cloneProductGuideProfiles();
+    buildProductGuideEditor();
+    productGuideModal.style.display='flex';
+    productGuideModal.setAttribute('aria-hidden','false');
+  }
+  function closeProductGuideEditor(){
+    if(!productGuideModal)return;
+    productGuideModal.style.display='none';
+    productGuideModal.setAttribute('aria-hidden','true');
+    productGuideEditorDirty=false;
+    productGuideEditorDraft=null;
+  }
   function saveProductGuideEditor(){
     if(productGuideEditorDirty)saveProductGuideEditorToDraft();
+    if(productGuideEditorDraft){
+      Object.keys(productGuideEditorDraft).forEach(function(key){
+        state.roastProfiles[key]=normalizeProductGuideRecord(productGuideEditorDraft[key],key);
+      });
+    }
     state.activeProductGuide=productGuideEditorActiveKey||'ebooks';
-    renderRoastProfile(state.activeProductGuide);syncProductGuideTabs(state.activeProductGuide);
-    pushHistory();markUnsaved();closeProductGuideEditor();
+    renderRoastProfile(state.activeProductGuide);
+    syncProductGuideTabs(state.activeProductGuide);
+    pushHistory();
+    markUnsaved();
+    closeProductGuideEditor();
     if(typeof showToast==='function')showToast('Product Guide updated.');
   }
 
