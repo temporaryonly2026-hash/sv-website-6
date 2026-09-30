@@ -3003,6 +3003,34 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     document.head.appendChild(link);
   }
 
+  // ---------- active site font settings ----------
+  // The Customize Panel stores the selected fonts, but the original implementation
+  // only updated CSS variables that are not consumed by the site's Tailwind font
+  // utility classes. Apply the selected families to the actual page font classes too.
+  function applyFontSettings(headingFont, bodyFont){
+    headingFont = String(headingFont || "").trim() || "Cormorant Garamond";
+    bodyFont = String(bodyFont || "").trim() || "Plus Jakarta Sans";
+
+    loadGoogleFont(headingFont);
+    loadGoogleFont(bodyFont);
+
+    var headingFamily = JSON.stringify(headingFont) + ", system-ui, sans-serif";
+    var bodyFamily = JSON.stringify(bodyFont) + ", system-ui, sans-serif";
+
+    document.documentElement.style.setProperty("--font-heading", headingFamily);
+    document.documentElement.style.setProperty("--font-body", bodyFamily);
+
+    var style = document.getElementById("ez-font-settings");
+    if(!style){
+      style = document.createElement("style");
+      style.id = "ez-font-settings";
+      document.head.appendChild(style);
+    }
+    style.textContent =
+      ".font-serif{font-family:" + headingFamily + "!important;}" +
+      "body.font-sans{font-family:" + bodyFamily + "!important;}";
+  }
+
   // ---------- state ----------
   var editOn = false;
   var viewOnly = false;
@@ -4380,13 +4408,11 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   // FONTS
   // ============================================================
   $("#fHeading").addEventListener("change", function(){
-    loadGoogleFont(this.value);
-    document.documentElement.style.setProperty("--font-heading", '"'+this.value+'", system-ui, sans-serif');
+    applyFontSettings(this.value, $("#fBody").value);
     markUnsaved();
   });
   $("#fBody").addEventListener("change", function(){
-    loadGoogleFont(this.value);
-    document.documentElement.style.setProperty("--font-body", '"'+this.value+'", system-ui, sans-serif');
+    applyFontSettings($("#fHeading").value, this.value);
     markUnsaved();
   });
 
@@ -5782,8 +5808,11 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
     if(s.cssVars){ Object.keys(s.cssVars).forEach(function(k){ if(s.cssVars[k]) document.documentElement.style.setProperty(k, s.cssVars[k]); }); }
     if(s.colorScheme && schemes[s.colorScheme]){ applyScheme(schemes[s.colorScheme], s.colorScheme); }
-    if(s.headingFont){ $("#fHeading").value = s.headingFont; loadGoogleFont(s.headingFont); }
-    if(s.bodyFont){ $("#fBody").value = s.bodyFont; loadGoogleFont(s.bodyFont); }
+    var restoredHeadingFont = s.headingFont || $("#fHeading").value || "Cormorant Garamond";
+    var restoredBodyFont = s.bodyFont || $("#fBody").value || "Plus Jakarta Sans";
+    $("#fHeading").value = restoredHeadingFont;
+    $("#fBody").value = restoredBodyFont;
+    applyFontSettings(restoredHeadingFont, restoredBodyFont);
     customEffects = normalizeCustomEffects(s);
     customEffectsDraft = cloneCustomEffects(customEffects);
     injectCustomEffects(customEffects);
