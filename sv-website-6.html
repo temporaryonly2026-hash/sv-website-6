@@ -2900,9 +2900,16 @@ body.ez-edit-on .ez-add-btn{display:flex;}
         <input type="text" id="ezProductCategoryInput" maxlength="40" placeholder="New category name">
         <button type="button" id="ezProductCategoryAdd">+ Add Category</button>
       </div>
-
       <div class="product-list" id="ezProductManagerList"></div>
     </div>
+    <div class="manager-foot">
+      <div class="manager-foot-left">
+        <button type="button" id="ezProductManagerAddProduct">+ Add Product</button>
+        <div class="manager-foot-note">Product cards show the product name only. Use Edit for the detailed settings editor.</div>
+      </div>
+      <button type="button" id="ezProductManagerDone">Done</button>
+    </div>
+  </div>
 </div>
 
 <div id="ezProductCategoryDeleteModal" aria-hidden="true">
@@ -2919,16 +2926,6 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     <div class="box-foot">
       <button type="button" id="ezProductCategoryDeleteCancel">Cancel</button>
       <button type="button" class="danger" id="ezProductCategoryDeleteConfirm">Move Products &amp; Delete</button>
-    </div>
-  </div>
-</div>
-
-<div id="ezProductManagerModal" aria-hidden="true">
-
-        <button type="button" id="ezProductManagerAddProduct">+ Add Product</button>
-        <div class="manager-foot-note">Product cards show the product name only. Use Edit for the detailed settings editor.</div>
-      </div>
-      <button type="button" id="ezProductManagerDone">Done</button>
     </div>
   </div>
 </div>
