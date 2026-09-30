@@ -4418,29 +4418,200 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     if(!productEditorCategory) return;
     productEditorCategory.innerHTML = "";
     state.productCategories.forEach(function(cat){
-      var chip=document.createElement("div");
-      chip.className="category-chip";
+      // "All Products" is a filter tab, not a product assignment category.
+      if(cat.id === "all") return;
+      var option = document.createElement("option");
+      option.value = cat.id;
+      option.textContent = cat.name;
+      productEditorCategory.appendChild(option);
+    });
+    var fallback = "ebooks";
+    if(!state.productCategories.some(function(cat){ return cat.id === fallback; })){
+      var firstAssignable = state.productCategories.find(function(cat){ return cat.id !== "all"; });
+      fallback = firstAssignable ? firstAssignable.id : "all";
+    }
+    productEditorCategory.value = state.productCategories.some(function(cat){ return cat.id === selectedId && cat.id !== "all"; })
+      ? selectedId
+      : fallback;
+  }
 
-      var btn=document.createElement("button");
-      btn.type="button";
-      btn.textContent=cat.name;
-      btn.dataset.categoryId=cat.id;
-      btn.className="category-btn"+(cat.id===active?" active":"");
-      btn.addEventListener("click",function(){
-        productManagerActiveCategory=cat.id;
+  function openProductEditor(id){
+    ensureProductDataArchitecture();
+    productEditorIsNew = !id;
+    productEditorProductId = id ? String(id) : null;
+
+    var product = id ? getProductById(id) : null;
+    if(id && !product){
+      if(typeof showToast === "function") showToast("That product could not be found.", "info");
+      return;
+    }
+
+    var fallbackCategory = state.productCategories.some(function(cat){ return cat.id === productManagerActiveCategory; })
+      && productManagerActiveCategory !== "all"
+      ? productManagerActiveCategory : "ebooks";
+
+    var draft = product ? normalizeProductRecord(Object.assign({}, product), state.products.length) : normalizeProductRecord({
+      id: uniqueProductId("product"),
+      name: "",
+      category: fallbackCategory,
+      badgeName: "",
+      tags: [],
+      imageUrl: "",
+      description: "",
+      rating: "0",
+      totalReviews: "0",
+      price: 0,
+      buttonText: "Buy Now",
+      buttonLink: "#",
+      openNewTab: true
+    }, state.products.length);
+
+    productEditorTitle.textContent = productEditorIsNew ? "Add Digital Product" : "Edit Product";
+    productEditorNote.textContent = productEditorIsNew
+      ? "Add a product display. The same information will feed Featured Digital Products and VIEW."
+      : "Update the product details shown in Featured Digital Products and VIEW.";
+
+    renderProductEditorCategories(draft.category);
+    productEditorName.value = draft.name || "";
+    productEditorPrice.value = productEditorPriceText(draft.price);
+    productEditorBadge.value = draft.badgeName || "";
+    productEditorTagInputs.forEach(function(input, index){
+      input.value = Array.isArray(draft.tags) ? (draft.tags[index] || "") : "";
+    });
+    productEditorImage.value = draft.imageUrl || "";
+    productEditorDescription.value = draft.description || "";
+    productEditorRating.value = draft.rating == null ? "" : String(draft.rating);
+    productEditorReviews.value = draft.totalReviews == null ? "" : String(draft.totalReviews);
+    productEditorButtonText.value = draft.buttonText || "";
+    productEditorButtonLink.value = draft.buttonLink || "";
+    productEditorOpenNewTab.checked = draft.openNewTab !== false;
+
+    productEditorModal.style.display = "flex";
+    productEditorModal.setAttribute("aria-hidden","false");
+    setTimeout(function(){
+      if(productEditorName){ productEditorName.focus(); productEditorName.select(); }
+    },0);
+  }
+
+  function closeProductEditor(){
+    if(!productEditorModal) return;
+    productEditorModal.style.display = "none";
+    productEditorModal.setAttribute("aria-hidden","true");
+    productEditorProductId = null;
+    productEditorIsNew = false;
+  }
+
+  function saveProductEditor(){
+    ensureProductDataArchitecture();
+
+    var name = (productEditorName.value || "").trim();
+    if(!name){
+      productEditorName.focus();
+      if(typeof showToast === "function") showToast("Product Name is required.", "info");
+      return;
+    }
+
+    var category = normalizeProductCategoryId(productEditorCategory.value || "ebooks");
+    if(category === "all" || !state.productCategories.some(function(cat){ return cat.id === category && cat.id !== "all"; })){
+      var firstAssignable = state.productCategories.find(function(cat){ return cat.id !== "all"; });
+      category = firstAssignable ? firstAssignable.id : "all";
+    }
+
+    var tags = productEditorTagInputs.map(function(input){
+      return (input.value || "").trim();
+    }).filter(Boolean).slice(0,3);
+
+    var price = String(productEditorPrice.value || "").trim();
+    if(!price) price = "$ 0.00";
+    else if(/^[0-9]+(?:\\.[0-9]+)?$/.test(price)){
+      var numericPrice = Number(price);
+      price = '$ ' + (Number.isFinite(numericPrice) ? numericPrice.toFixed(2) : price);
+    }
+
+    var payload = {
+      name: name,
+      category: category,
+      badgeName: (productEditorBadge.value || "").trim(),
+      tags: tags,
+      imageUrl: (productEditorImage.value || "").trim(),
+      description: (productEditorDescription.value || "").trim(),
+      rating: String(productEditorRating.value || "").trim(),
+      totalReviews: String(productEditorReviews.value || "").trim(),
+      price: price,
+      buttonText: (productEditorButtonText.value || "").trim() || "Buy Now",
+      buttonLink: (productEditorButtonLink.value || "").trim() || "#",
+      openNewTab: !!productEditorOpenNewTab.checked
+    };
+
+    var wasNew = productEditorIsNew;
+    if(wasNew){
+      payload.id = uniqueProductId("product");
+      var created = normalizeProductRecord(payload, state.products.length);
+      state.products.push(created);
+      state.activeProductId = created.id;
+    } else {
+      var existing = getProductById(productEditorProductId);
+      if(!existing){
+        if(typeof showToast === "function") showToast("That product no longer exists.", "info");
+        closeProductEditor();
+        return;
+      }
+      Object.keys(payload).forEach(function(key){ existing[key] = payload[key]; });
+      normalizeProductRecord(existing, state.products.indexOf(existing));
+      state.activeProductId = existing.id;
+    }
+
+    // Keep the manager/filter view useful after an edit. If the product
+    // was moved to a different category, show that destination category.
+    state.activeProductCategory = category;
+    productManagerActiveCategory = category;
+    renderProducts(category);
+    renderProductManager();
+
+    pushHistory();
+    markUnsaved();
+
+    closeProductEditor();
+    if(typeof showToast === "function") showToast(wasNew ? "Product added." : "Product updated.");
+  }
+
+  window.__ezOpenProductEditor = openProductEditor;
+
+  function renderProductManager(){
+    ensureProductDataArchitecture();
+    if(!productManagerModal || !productManagerCategoryBar || !productManagerList) return;
+
+    var active = normalizeProductCategoryId(productManagerActiveCategory || "all");
+    if(!state.productCategories.some(function(cat){ return cat.id === active; })) active = "all";
+    productManagerActiveCategory = active;
+
+    productManagerCategoryBar.innerHTML = "";
+    productManagerCategoryBar.classList.toggle("ez-category-overflow", state.productCategories.length > 4);
+    state.productCategories.forEach(function(cat){
+      var chip = document.createElement("div");
+      chip.className = "category-chip";
+
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = cat.name;
+      btn.dataset.categoryId = cat.id;
+      btn.className = "category-btn" + (cat.id === active ? " active" : "");
+      btn.addEventListener("click", function(){
+        productManagerActiveCategory = cat.id;
         renderProductManager();
       });
       chip.appendChild(btn);
 
       if(!cat.system){
-        var del=document.createElement("button");
-        del.type="button";
-        del.className="category-delete";
-        del.textContent="Delete";
-        del.title="Delete "+cat.name;
-        del.setAttribute("aria-label","Delete "+cat.name);
-        del.addEventListener("click",function(e){
-          e.preventDefault();e.stopPropagation();
+        var del = document.createElement("button");
+        del.type = "button";
+        del.className = "category-delete";
+        del.textContent = "Delete";
+        del.title = "Delete " + cat.name;
+        del.setAttribute("aria-label", "Delete " + cat.name);
+        del.addEventListener("click", function(e){
+          e.preventDefault();
+          e.stopPropagation();
           deleteProductManagerCategory(cat.id);
         });
         chip.appendChild(del);
@@ -5741,29 +5912,31 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   function updateEmbedScriptPreview(){
     var out = $("#cpEmbedOut");
     if(!out) return;
-    try{
-      var domain = $("#cpDomain").value.trim() || "yourname.example.com";
-      var proto = domain.indexOf("http") === 0 ? "" : "https://";
-      var base = proto + domain.replace(/\/$/,"");
-      var payload = encodeSettings(collectSettings());
-      var snippet = '<script src="' + base + '/embed-loader-6.js' + (payload ? '#p=' + encodeURIComponent(payload) + '&file=sv-website-6.html' : '#file=sv-website-6.html') + '" data-page="sv-website-6.html" data-ez-embed defer><' + '/script>';
-      out.value = snippet;
-    }catch(e){}
-  }
 
-  $("#cpCopy").addEventListener("click", function(){
-    var domain = $("#cpDomain").value.trim() || "yourname.example.com";
-    var proto = domain.indexOf("http") === 0 ? "" : "https://";
+    var domain = "yourname.example.com";
+    try{
+      var domainEl = $("#cpDomain");
+      if(domainEl && domainEl.value.trim()) domain = domainEl.value.trim();
+    }catch(e){}
+
+    var proto = /^https?:\/\//i.test(domain) ? "" : "https://";
     var base = proto + domain.replace(/\/$/,"");
-    var payload = encodeSettings(collectSettings());
+    var payload = "";
+    try{ payload = encodeSettings(collectSettings()); }catch(e){}
+
     var snippet = '<script src="' + base + '/embed-loader-6.js' +
       (payload ? '#p=' + encodeURIComponent(payload) + '&file=sv-website-6.html' : '#file=sv-website-6.html') +
       '" data-page="sv-website-6.html" data-ez-embed defer><' + '/script>';
-    var out = $("#cpEmbedOut");
-    out.style.display = "block";
     out.value = snippet;
+  }
+
+  $("#cpCopy").addEventListener("click", function(){
+    updateEmbedScriptPreview();
+    var out = $("#cpEmbedOut");
+    if(!out) return;
+    out.style.display = "block";
     out.select();
-    if(navigator.clipboard){ navigator.clipboard.writeText(snippet); }
+    if(navigator.clipboard){ navigator.clipboard.writeText(out.value); }
   });
 
 
