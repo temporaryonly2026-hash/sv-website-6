@@ -491,21 +491,29 @@ body:not(.ez-edit-on) .item-actions{display:none !important;}
   letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;
 }
 #ezProductManagerModal .category-bar{
-  display:flex;align-items:center;gap:7px;overflow-x:auto;padding-bottom:5px;
+  display:flex;align-items:center;gap:7px;overflow-x:scroll;padding-bottom:8px;
+  scrollbar-width:thin;scrollbar-color:#3D2619 transparent;scrollbar-gutter:stable;
 }
-#ezProductManagerModal .category-bar::-webkit-scrollbar{height:5px;}
-#ezProductManagerModal .category-bar.ez-category-overflow{scrollbar-width:thin;scrollbar-color:#3D2619 transparent;padding-bottom:8px;}
-#ezProductManagerModal .category-bar.ez-category-overflow::-webkit-scrollbar{display:block;height:7px;}
-#ezProductManagerModal .category-bar.ez-category-overflow::-webkit-scrollbar-track{background:rgba(61,38,25,.25);border-radius:999px;}
-#ezProductManagerModal .category-bar.ez-category-overflow::-webkit-scrollbar-thumb{background:#3D2619;border-radius:999px;}
-#ezProductManagerModal .category-bar button{
+#ezProductManagerModal .category-bar::-webkit-scrollbar{display:block;height:7px;}
+#ezProductManagerModal .category-bar::-webkit-scrollbar-track{background:rgba(61,38,25,.25);border-radius:999px;}
+#ezProductManagerModal .category-bar::-webkit-scrollbar-thumb{background:#3D2619;border-radius:999px;}
+#ezProductManagerModal .category-chip{display:flex;align-items:center;gap:4px;flex:0 0 auto;}
+#ezProductManagerModal .category-bar .category-btn{
   flex:0 0 auto;padding:7px 11px;border-radius:8px;
   border:1px solid rgba(255,255,255,.16);background:#101114;
   color:#9a9d97;font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap;
 }
-#ezProductManagerModal .category-bar button:hover{border-color:rgba(201,161,90,.5);color:#c9a15a;}
-#ezProductManagerModal .category-bar button.active{
+#ezProductManagerModal .category-bar .category-btn:hover{border-color:rgba(201,161,90,.5);color:#c9a15a;}
+#ezProductManagerModal .category-bar .category-btn.active{
   background:rgba(201,161,90,.16);border-color:#c9a15a;color:#c9a15a;
+}
+#ezProductManagerModal .category-bar .category-delete{
+  flex:0 0 auto;padding:5px 7px;border-radius:7px;
+  border:1px solid rgba(226,131,111,.38);background:rgba(226,131,111,.08);
+  color:#e2836f;font-size:10px;font-weight:700;cursor:pointer;
+}
+#ezProductManagerModal .category-bar .category-delete:hover{
+  background:rgba(226,131,111,.16);border-color:rgba(226,131,111,.62);
 }
 #ezProductManagerModal .category-add-row{
   display:flex;gap:7px;margin-top:10px;
@@ -573,23 +581,33 @@ body.ez-view-only #ezProductManagerModal{display:none !important;}
 /* ---------- Featured Product Category Tabs ---------- */
 #container0035{
   min-width:0;width:100%;max-width:min(560px,100%);flex:0 1 560px;
-  margin-left:auto;
-  justify-content:flex-end;
-  overflow-x:hidden;
-  overflow-y:hidden;
+  margin-left:auto;justify-content:flex-end;
+  overflow-x:scroll;overflow-y:hidden;
+  scrollbar-width:thin;scrollbar-color:#3D2619 transparent;
+  scrollbar-gutter:stable;padding-bottom:8px;
 }
 #container0035 .filter-btn{flex:0 0 auto;white-space:nowrap;}
-#container0035.ez-category-overflow{
-  justify-content:flex-start;
-  overflow-x:auto!important;
-  overflow-y:hidden;
-  scrollbar-width:thin;
-  scrollbar-color:#3D2619 transparent;
-  padding-bottom:8px;
+#container0035::-webkit-scrollbar{display:block;height:8px;}
+#container0035::-webkit-scrollbar-track{background:rgba(61,38,25,.25);border-radius:999px;}
+#container0035::-webkit-scrollbar-thumb{background:#3D2619;border-radius:999px;}
+#container0035.ez-category-overflow{justify-content:flex-start;overflow-x:scroll!important;}
+
+#container0038{align-items:stretch;}
+#container0038 .roast-tab{
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:flex-start!important;align-self:stretch;
 }
-#container0035.ez-category-overflow::-webkit-scrollbar{display:block;height:8px;}
-#container0035.ez-category-overflow::-webkit-scrollbar-track{background:rgba(61,38,25,.25);border-radius:999px;}
-#container0035.ez-category-overflow::-webkit-scrollbar-thumb{background:#3D2619;border-radius:999px;}
+#container0038 .roast-tab > span:first-child{flex:0 0 auto;}
+#container0038.ez-guide-overflow{
+  display:flex!important;flex-wrap:nowrap!important;justify-content:flex-start;
+  overflow-x:auto!important;overflow-y:hidden;
+  scrollbar-width:thin;scrollbar-color:#3D2619 transparent;
+  scrollbar-gutter:stable;padding-bottom:8px;
+}
+#container0038.ez-guide-overflow::-webkit-scrollbar{display:block;height:8px;}
+#container0038.ez-guide-overflow::-webkit-scrollbar-track{background:rgba(61,38,25,.25);border-radius:999px;}
+#container0038.ez-guide-overflow::-webkit-scrollbar-thumb{background:#3D2619;border-radius:999px;}
+#container0038.ez-guide-overflow .roast-tab{flex:0 0 220px;min-width:180px;}
 /* ---------- Product Guide Editor ---------- */
 #ezProductGuideModal{display:none;position:fixed;inset:0;z-index:2147483480;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:24px;}
 #ezProductGuideModal .box{width:min(880px,94vw);max-height:min(92vh,900px);display:flex;flex-direction:column;background:#16181d;border:1px solid rgba(255,255,255,.14);border-radius:12px;overflow:hidden;color:#f2f1ec;font-family:Inter,system-ui,sans-serif;box-shadow:0 24px 80px rgba(0,0,0,.55);}
@@ -619,8 +637,15 @@ body.ez-view-only #ezProductManagerModal{display:none !important;}
 #ezProductGuideModal .metric-row input[type=range]{width:100%;accent-color:#c9a15a;}
 #ezProductGuideModal .metric-note{font-size:9.5px;color:#6f716d;text-align:right;margin-top:2px;}
 #ezProductGuideModal .guide-help{font-size:10px;color:#6f716d;line-height:1.4;margin-top:5px;}
-#ezProductGuideModal .guide-foot{flex:0 0 auto;display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.1);background:#16181d;}
+#ezProductGuideModal .guide-foot{
+  flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:12px 16px;border-top:1px solid rgba(255,255,255,.1);background:#16181d;
+}
+#ezProductGuideModal .guide-foot-left,#ezProductGuideModal .guide-foot-right{display:flex;align-items:center;gap:8px;min-width:0;}
 #ezProductGuideModal .guide-foot button{padding:8px 14px;border-radius:7px;border:1px solid rgba(255,255,255,.16);background:#1c1e23;color:#f2f1ec;font-size:12px;font-weight:600;cursor:pointer;}
+#ezProductGuideModal .guide-foot button:hover{background:#23262c;}
+#ezProductGuideModal .guide-foot button.delete{border-color:rgba(226,131,111,.45);background:rgba(226,131,111,.08);color:#e2836f;}
+#ezProductGuideModal .guide-foot button.delete:hover{background:rgba(226,131,111,.16);border-color:rgba(226,131,111,.62);}
 #ezProductGuideModal .guide-foot button.save{background:#c9a15a;border-color:#c9a15a;color:#171310;}
 body.ez-view-only #ezProductGuideModal{display:none!important;}
 @media (max-width:720px){#ezProductGuideModal{padding:12px;}#ezProductGuideModal .box{width:100%;max-height:94vh;}#ezProductGuideModal .guide-grid{grid-template-columns:1fr;}#ezProductGuideModal .metric-row{grid-template-columns:1fr 70px;}#ezProductGuideModal .metric-row .metric-pair:last-child{grid-column:1/-1;}}
@@ -648,6 +673,25 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 @media (max-width:720px){
   #ezStylePanel{width:88vw;}
 }
+/* ---------- Responsive layout / mobile navigation fixes ---------- */
+#mobile-menu-btn{position:relative;z-index:50;pointer-events:auto;}
+@media (max-width:1099px){
+  #navbar #container0007{display:none!important;}
+  #navbar #mobile-menu-btn{display:inline-flex!important;align-items:center;justify-content:center;}
+  #navbar #link0009{display:none!important;}
+  #navbar #container0008{gap:8px!important;}
+  #shop #container0033{flex-direction:column!important;align-items:stretch!important;gap:16px!important;}
+  #shop #container0035{max-width:none!important;width:100%!important;flex:1 1 auto!important;margin-left:0!important;justify-content:flex-start!important;}
+  #product-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important;}
+}
+@media (max-width:699px){
+  #product-grid{grid-template-columns:1fr!important;gap:16px!important;}
+  #ezProductGuideModal .guide-foot{align-items:stretch;flex-direction:column;}
+  #ezProductGuideModal .guide-foot-left,#ezProductGuideModal .guide-foot-right{width:100%;justify-content:flex-end;flex-wrap:wrap;}
+}
+@media (min-width:1100px){#mobile-menu{display:none!important;}}
+#navbar #mobile-menu.hidden{display:none!important;}
+#navbar #mobile-menu:not(.hidden){display:block!important;}
 </style>
 
 </head>
@@ -823,22 +867,22 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 <!-- Product Format Selector -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto mb-12" id="container0038">
 <button class="roast-tab active p-4 rounded-xl glass-card border border-copper/30 text-center transition-all hover:border-copper" data-roast="ebooks" id="button0005">
-<span class="block w-4 h-4 rounded-full bg-[#D48C46] mx-auto mb-2 shadow-sm" id="text0021"></span>
+<span class="block w-4 h-4 rounded-full bg-copper mx-auto mb-2 shadow-sm" id="text0021"></span>
 <span class="font-serif text-lg text-cream-50 block font-semibold" id="text0022">E-books &amp; Guides</span>
 <span class="text-[10px] text-cream-400 uppercase tracking-widest" id="text0023">Read &amp; Learn</span>
 </button>
 <button class="roast-tab p-4 rounded-xl glass-card border border-copper/15 text-center transition-all hover:border-copper" data-roast="guides" id="button0006">
-<span class="block w-4 h-4 rounded-full bg-[#A35D33] mx-auto mb-2 shadow-sm" id="text0024"></span>
+<span class="block w-4 h-4 rounded-full bg-copper mx-auto mb-2 shadow-sm" id="text0024"></span>
 <span class="font-serif text-lg text-cream-50 block font-semibold" id="text0025">Templates &amp; Workbooks</span>
 <span class="text-[10px] text-cream-400 uppercase tracking-widest" id="text0026">Edit &amp; Apply</span>
 </button>
 <button class="roast-tab p-4 rounded-xl glass-card border border-copper/15 text-center transition-all hover:border-copper" data-roast="templates" id="button0007">
-<span class="block w-4 h-4 rounded-full bg-[#6E3B1E] mx-auto mb-2 shadow-sm" id="text0027"></span>
+<span class="block w-4 h-4 rounded-full bg-copper mx-auto mb-2 shadow-sm" id="text0027"></span>
 <span class="font-serif text-lg text-cream-50 block font-semibold" id="text0028">Checklists &amp; Toolkits</span>
 <span class="text-[10px] text-cream-400 uppercase tracking-widest" id="text0029">Plan &amp; Reuse</span>
 </button>
 <button class="roast-tab p-4 rounded-xl glass-card border border-copper/15 text-center transition-all hover:border-copper" data-roast="dark" id="button0008">
-<span class="block w-4 h-4 rounded-full bg-[#3D2112] mx-auto mb-2 shadow-sm" id="text0030"></span>
+<span class="block w-4 h-4 rounded-full bg-copper mx-auto mb-2 shadow-sm" id="text0030"></span>
 <span class="font-serif text-lg text-cream-50 block font-semibold" id="text0031">Bundles &amp; Planners</span>
 <span class="text-[10px] text-cream-400 uppercase tracking-widest" id="text0032">Build &amp; Organize</span>
 </button>
@@ -1718,30 +1762,131 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             return out;
         }
 
+        function currentProductGuideAccent(){
+            var accent=getComputedStyle(document.documentElement).getPropertyValue('--ez-solace-accent').trim();
+            return /^#[0-9a-f]{6}$/i.test(accent)?accent:'#C87A4B';
+        }
+
+        function makeDefaultProductGuideProfile(key,index){
+            var titles=['E-book & Guide Formats','Template & Workbook Formats','Checklist & Toolkit Formats','Bundle & Planner Formats'];
+            var subtitles=['Deep-Dive Learning','Structured & Reusable Resources','Plan & Reuse','Complete Resource Sets'];
+            var descriptions=[
+                'Designed for readers who want clear explanations, practical frameworks, and a focused path from learning to action.',
+                'Guides package complex tasks into straightforward steps, checklists, and examples you can apply immediately.',
+                'Templates and workbooks help you move faster by giving you a ready-made structure you can adapt to your own workflow.',
+                'Resource bundles combine complementary tools into a single library for bigger projects, teams, and repeatable systems.'
+            ];
+            var metricA=[80,65,55,40],metricB=[65,75,85,95],metricC=[85,80,70,75],metricD=[80,75,70,80];
+            var uses=['Read at your pace','Edit when needed','Open & apply','Build & Organize'];
+            var best=['Easy to revisit','Easy to customize','Action-friendly','Structured'];
+            var includes=['PDF, EPUB, downloadable files','Downloadable tools + worksheets','Downloadable tools','Curated bundle'];
+
+            return normalizeProductGuideRecord({
+                key:key,
+                title:index<4?titles[index]:'New Product Guide',
+                subtitle:index<4?subtitles[index]:'New Format',
+                description:index<4?descriptions[index]:'Add a description for this product guide.',
+                indicatorColor:currentProductGuideAccent(),
+                metrics:[
+                    {label:'Depth',percentage:index<4?metricA[index]:50},
+                    {label:'Depth',percentage:index<4?metricB[index]:50},
+                    {label:'Usefulness',percentage:index<4?metricC[index]:50},
+                    {label:'Reusability',percentage:index<4?metricD[index]:50}
+                ],
+                recommended:{
+                    title:'Recommended Format',
+                    rows:[
+                        {label:'Use',value:index<4?uses[index]:'',icon:'thermometer'},
+                        {label:'Best For',value:index<4?best[index]:'',icon:'sliders'},
+                        {label:'Includes',value:index<4?includes[index]:'',icon:'book-open'}
+                    ]
+                }
+            },key);
+        }
+
         function ensureProductGuideDataArchitecture(){
-            if(!state.roastProfiles||typeof state.roastProfiles!=='object') state.roastProfiles={};
-            var defaults={ebooks:'#D48C46',guides:'#A35D33',templates:'#6E3B1E',dark:'#3D2112'};
-            Object.keys(defaults).forEach(function(key){
-                var current=state.roastProfiles[key]||{};
-                state.roastProfiles[key]=normalizeProductGuideRecord(Object.assign({},current,{key:key,indicatorColor:current.indicatorColor||defaults[key]}),key);
-            });
-            if(!state.activeProductGuide||!state.roastProfiles[state.activeProductGuide]) state.activeProductGuide='ebooks';
+            if(!state.roastProfiles||typeof state.roastProfiles!=='object')state.roastProfiles={};
+            var keys=Object.keys(state.roastProfiles);
+
+            if(!keys.length){
+                ['ebooks','guides','templates','dark'].forEach(function(key,index){
+                    state.roastProfiles[key]=makeDefaultProductGuideProfile(key,index);
+                });
+            }else{
+                keys.forEach(function(key){
+                    var current=state.roastProfiles[key]||{};
+                    state.roastProfiles[key]=normalizeProductGuideRecord(Object.assign({},current,{
+                        key:key,
+                        indicatorColor:currentProductGuideAccent()
+                    }),key);
+                });
+            }
+
+            if(!state.activeProductGuide||!state.roastProfiles[state.activeProductGuide]){
+                state.activeProductGuide=Object.keys(state.roastProfiles)[0]||'ebooks';
+            }
         }
         ensureProductGuideDataArchitecture();
 
+        function createProductGuideTab(key){
+            var btn=document.createElement('button');
+            btn.type='button';
+            btn.className='roast-tab p-4 rounded-xl glass-card border border-copper/15 text-center transition-all hover:border-copper';
+            btn.dataset.roast=key;
+            btn.dataset.productGuideGenerated='true';
+
+            var dot=document.createElement('span');
+            dot.className='block w-4 h-4 rounded-full bg-copper mx-auto mb-2 shadow-sm';
+
+            var title=document.createElement('span');
+            title.className='font-serif text-lg text-cream-50 block font-semibold';
+
+            var subtitle=document.createElement('span');
+            subtitle.className='text-[10px] text-cream-400 uppercase tracking-widest';
+
+            btn.appendChild(dot);btn.appendChild(title);btn.appendChild(subtitle);
+            return btn;
+        }
+
         function syncProductGuideTabs(activeKey){
             ensureProductGuideDataArchitecture();
-            document.querySelectorAll('.roast-tab').forEach(function(tab){
-                var key=tab.dataset.roast,data=state.roastProfiles[key];
+            var wrap=document.getElementById('container0038');
+            if(!wrap)return;
+
+            var keys=Object.keys(state.roastProfiles);
+            wrap.classList.toggle('ez-guide-overflow',keys.length>4);
+
+            var existing=Array.from(wrap.querySelectorAll('.roast-tab'));
+            keys.forEach(function(key){
+                var data=state.roastProfiles[key];
                 if(!data)return;
+
+                var tab=existing.find(function(el){return el.dataset.roast===key;});
+                if(!tab){
+                    tab=createProductGuideTab(key);
+                    wrap.appendChild(tab);
+                }
+
+                tab.dataset.roast=key;
                 tab.classList.toggle('active',key===activeKey);
                 tab.classList.toggle('border-copper',key===activeKey);
                 tab.classList.toggle('border-copper/15',key!==activeKey);
+
                 var spans=tab.querySelectorAll('span');
-                if(spans[0])spans[0].style.backgroundColor=data.indicatorColor;
+                var accent=currentProductGuideAccent();
+                if(spans[0]){
+                    spans[0].style.backgroundColor=accent;
+                    spans[0].classList.add('bg-copper');
+                }
                 if(spans[1])spans[1].textContent=data.title;
                 if(spans[2])spans[2].textContent=data.subtitle;
             });
+
+            wrap.querySelectorAll('.roast-tab').forEach(function(tab){
+                if(!keys.includes(tab.dataset.roast))tab.remove();
+            });
+
+            if(window.__assignRuntimeIds)window.__assignRuntimeIds(wrap);
         }
 
         function renderRoastProfile(key='ebooks'){
@@ -2225,35 +2370,36 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             syncProductCategoryTabs(state.activeProductCategory || 'all');
 
             // Product Format Buttons
-            document.querySelectorAll('.roast-tab').forEach(tab => {
-                if(tab.getAttribute('data-ez-guide-bound')) return;
-                tab.setAttribute('data-ez-guide-bound','true');
-                tab.addEventListener('click', (e) => {
-                    const target=e.currentTarget;
-                    state.activeProductGuide=target.dataset.roast || 'ebooks';
+            if(!document.documentElement.getAttribute('data-ez-guide-delegated')){
+                document.documentElement.setAttribute('data-ez-guide-delegated','true');
+                document.addEventListener('click',function(e){
+                    var target=e.target&&e.target.closest?e.target.closest('#container0038 .roast-tab'):null;
+                    if(!target)return;
+                    e.preventDefault();
+                    state.activeProductGuide=target.dataset.roast||Object.keys(state.roastProfiles)[0];
                     renderRoastProfile(state.activeProductGuide);
-                });
-            });
-            syncProductGuideTabs(state.activeProductGuide || 'ebooks');
+                },true);
+            }
+            syncProductGuideTabs(state.activeProductGuide||Object.keys(state.roastProfiles)[0]);
 
             // Mobile Menu
-            const mobileBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileBtn && mobileMenu && !mobileBtn.getAttribute('data-ez-bound')) {
-                mobileBtn.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                });
-                mobileBtn.setAttribute('data-ez-bound', 'true');
+            if(!document.documentElement.getAttribute('data-ez-mobile-menu-delegated')){
+                document.documentElement.setAttribute('data-ez-mobile-menu-delegated','true');
+                document.addEventListener('click',function(e){
+                    var btn=e.target&&e.target.closest?e.target.closest('#mobile-menu-btn'):null;
+                    if(btn){
+                        e.preventDefault();e.stopPropagation();
+                        var menu=document.getElementById('mobile-menu');
+                        if(menu)menu.classList.toggle('hidden');
+                        return;
+                    }
+                    var link=e.target&&e.target.closest?e.target.closest('#mobile-menu .mobile-nav-link'):null;
+                    if(link){
+                        var menu=document.getElementById('mobile-menu');
+                        if(menu)menu.classList.add('hidden');
+                    }
+                },true);
             }
-
-            document.querySelectorAll('.mobile-nav-link').forEach(l => {
-                if (l.getAttribute('data-ez-bound')) return;
-                l.addEventListener('click', () => {
-                    const menu = document.getElementById('mobile-menu');
-                    if (menu) menu.classList.add('hidden');
-                });
-                l.setAttribute('data-ez-bound', 'true');
-            });
 
             // Navbar Glass Scroll Effect
             window.addEventListener('scroll', () => {
@@ -2668,8 +2814,14 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       <div id="ezProductGuideEditorContent"></div>
     </div>
     <div class="guide-foot">
-      <button type="button" id="ezProductGuideCancel">Cancel</button>
-      <button type="button" class="save" id="ezProductGuideSave">Save Product Guide</button>
+      <div class="guide-foot-left">
+        <button type="button" id="ezProductGuideAdd">+ Add Product Guide</button>
+        <button type="button" class="delete" id="ezProductGuideDelete">Delete Product Guide</button>
+      </div>
+      <div class="guide-foot-right">
+        <button type="button" id="ezProductGuideCancel">Cancel</button>
+        <button type="button" class="save" id="ezProductGuideSave">Save Product Guide</button>
+      </div>
     </div>
   </div>
 </div>
@@ -4209,6 +4361,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
         stroke:#2F5D50!important;
       }
     `;
+    syncProductGuideTabs(state.activeProductGuide||Object.keys(state.roastProfiles)[0]);
     applyIvorySageDirectOverrides();
   }
 
@@ -4265,186 +4418,35 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     if(!productEditorCategory) return;
     productEditorCategory.innerHTML = "";
     state.productCategories.forEach(function(cat){
-      // "All Products" is a filter tab, not a product assignment category.
-      if(cat.id === "all") return;
-      var option = document.createElement("option");
-      option.value = cat.id;
-      option.textContent = cat.name;
-      productEditorCategory.appendChild(option);
-    });
-    var fallback = "ebooks";
-    if(!state.productCategories.some(function(cat){ return cat.id === fallback; })){
-      var firstAssignable = state.productCategories.find(function(cat){ return cat.id !== "all"; });
-      fallback = firstAssignable ? firstAssignable.id : "all";
-    }
-    productEditorCategory.value = state.productCategories.some(function(cat){ return cat.id === selectedId && cat.id !== "all"; })
-      ? selectedId
-      : fallback;
-  }
+      var chip=document.createElement("div");
+      chip.className="category-chip";
 
-  function openProductEditor(id){
-    ensureProductDataArchitecture();
-    productEditorIsNew = !id;
-    productEditorProductId = id ? String(id) : null;
-
-    var product = id ? getProductById(id) : null;
-    if(id && !product){
-      if(typeof showToast === "function") showToast("That product could not be found.", "info");
-      return;
-    }
-
-    var fallbackCategory = state.productCategories.some(function(cat){ return cat.id === productManagerActiveCategory; })
-      && productManagerActiveCategory !== "all"
-      ? productManagerActiveCategory : "ebooks";
-
-    var draft = product ? normalizeProductRecord(Object.assign({}, product), state.products.length) : normalizeProductRecord({
-      id: uniqueProductId("product"),
-      name: "",
-      category: fallbackCategory,
-      badgeName: "",
-      tags: [],
-      imageUrl: "",
-      description: "",
-      rating: "0",
-      totalReviews: "0",
-      price: 0,
-      buttonText: "Buy Now",
-      buttonLink: "#",
-      openNewTab: true
-    }, state.products.length);
-
-    productEditorTitle.textContent = productEditorIsNew ? "Add Digital Product" : "Edit Product";
-    productEditorNote.textContent = productEditorIsNew
-      ? "Add a product display. The same information will feed Featured Digital Products and VIEW."
-      : "Update the product details shown in Featured Digital Products and VIEW.";
-
-    renderProductEditorCategories(draft.category);
-    productEditorName.value = draft.name || "";
-    productEditorPrice.value = productEditorPriceText(draft.price);
-    productEditorBadge.value = draft.badgeName || "";
-    productEditorTagInputs.forEach(function(input, index){
-      input.value = Array.isArray(draft.tags) ? (draft.tags[index] || "") : "";
-    });
-    productEditorImage.value = draft.imageUrl || "";
-    productEditorDescription.value = draft.description || "";
-    productEditorRating.value = draft.rating == null ? "" : String(draft.rating);
-    productEditorReviews.value = draft.totalReviews == null ? "" : String(draft.totalReviews);
-    productEditorButtonText.value = draft.buttonText || "";
-    productEditorButtonLink.value = draft.buttonLink || "";
-    productEditorOpenNewTab.checked = draft.openNewTab !== false;
-
-    productEditorModal.style.display = "flex";
-    productEditorModal.setAttribute("aria-hidden","false");
-    setTimeout(function(){
-      if(productEditorName){ productEditorName.focus(); productEditorName.select(); }
-    },0);
-  }
-
-  function closeProductEditor(){
-    if(!productEditorModal) return;
-    productEditorModal.style.display = "none";
-    productEditorModal.setAttribute("aria-hidden","true");
-    productEditorProductId = null;
-    productEditorIsNew = false;
-  }
-
-  function saveProductEditor(){
-    ensureProductDataArchitecture();
-
-    var name = (productEditorName.value || "").trim();
-    if(!name){
-      productEditorName.focus();
-      if(typeof showToast === "function") showToast("Product Name is required.", "info");
-      return;
-    }
-
-    var category = normalizeProductCategoryId(productEditorCategory.value || "ebooks");
-    if(category === "all" || !state.productCategories.some(function(cat){ return cat.id === category && cat.id !== "all"; })){
-      var firstAssignable = state.productCategories.find(function(cat){ return cat.id !== "all"; });
-      category = firstAssignable ? firstAssignable.id : "all";
-    }
-
-    var tags = productEditorTagInputs.map(function(input){
-      return (input.value || "").trim();
-    }).filter(Boolean).slice(0,3);
-
-    var price = String(productEditorPrice.value || "").trim();
-    if(!price) price = "$ 0.00";
-    else if(/^[0-9]+(?:\\.[0-9]+)?$/.test(price)){
-      var numericPrice = Number(price);
-      price = '$ ' + (Number.isFinite(numericPrice) ? numericPrice.toFixed(2) : price);
-    }
-
-    var payload = {
-      name: name,
-      category: category,
-      badgeName: (productEditorBadge.value || "").trim(),
-      tags: tags,
-      imageUrl: (productEditorImage.value || "").trim(),
-      description: (productEditorDescription.value || "").trim(),
-      rating: String(productEditorRating.value || "").trim(),
-      totalReviews: String(productEditorReviews.value || "").trim(),
-      price: price,
-      buttonText: (productEditorButtonText.value || "").trim() || "Buy Now",
-      buttonLink: (productEditorButtonLink.value || "").trim() || "#",
-      openNewTab: !!productEditorOpenNewTab.checked
-    };
-
-    var wasNew = productEditorIsNew;
-    if(wasNew){
-      payload.id = uniqueProductId("product");
-      var created = normalizeProductRecord(payload, state.products.length);
-      state.products.push(created);
-      state.activeProductId = created.id;
-    } else {
-      var existing = getProductById(productEditorProductId);
-      if(!existing){
-        if(typeof showToast === "function") showToast("That product no longer exists.", "info");
-        closeProductEditor();
-        return;
-      }
-      Object.keys(payload).forEach(function(key){ existing[key] = payload[key]; });
-      normalizeProductRecord(existing, state.products.indexOf(existing));
-      state.activeProductId = existing.id;
-    }
-
-    // Keep the manager/filter view useful after an edit. If the product
-    // was moved to a different category, show that destination category.
-    state.activeProductCategory = category;
-    productManagerActiveCategory = category;
-    renderProducts(category);
-    renderProductManager();
-
-    pushHistory();
-    markUnsaved();
-
-    closeProductEditor();
-    if(typeof showToast === "function") showToast(wasNew ? "Product added." : "Product updated.");
-  }
-
-  window.__ezOpenProductEditor = openProductEditor;
-
-  function renderProductManager(){
-    ensureProductDataArchitecture();
-    if(!productManagerModal || !productManagerCategoryBar || !productManagerList) return;
-
-    var active = normalizeProductCategoryId(productManagerActiveCategory || "all");
-    if(!state.productCategories.some(function(cat){ return cat.id === active; })) active = "all";
-    productManagerActiveCategory = active;
-
-    productManagerCategoryBar.innerHTML = "";
-    productManagerCategoryBar.classList.toggle("ez-category-overflow", state.productCategories.length > 4);
-    state.productCategories.forEach(function(cat){
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = cat.name;
-      btn.dataset.categoryId = cat.id;
-      btn.className = cat.id === active ? "active" : "";
-      btn.addEventListener("click", function(){
-        productManagerActiveCategory = cat.id;
+      var btn=document.createElement("button");
+      btn.type="button";
+      btn.textContent=cat.name;
+      btn.dataset.categoryId=cat.id;
+      btn.className="category-btn"+(cat.id===active?" active":"");
+      btn.addEventListener("click",function(){
+        productManagerActiveCategory=cat.id;
         renderProductManager();
       });
-      productManagerCategoryBar.appendChild(btn);
+      chip.appendChild(btn);
+
+      if(!cat.system){
+        var del=document.createElement("button");
+        del.type="button";
+        del.className="category-delete";
+        del.textContent="Delete";
+        del.title="Delete "+cat.name;
+        del.setAttribute("aria-label","Delete "+cat.name);
+        del.addEventListener("click",function(e){
+          e.preventDefault();e.stopPropagation();
+          deleteProductManagerCategory(cat.id);
+        });
+        chip.appendChild(del);
+      }
+
+      productManagerCategoryBar.appendChild(chip);
     });
 
     productManagerList.innerHTML = "";
@@ -4541,6 +4543,33 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     productManagerModal.setAttribute("aria-hidden","true");
   }
 
+  function deleteProductManagerCategory(id){
+    ensureProductDataArchitecture();
+    var cat=state.productCategories.find(function(item){return item.id===id;});
+    if(!cat)return;
+    if(cat.system){
+      if(typeof showToast==="function")showToast("Default categories cannot be deleted.");
+      return;
+    }
+
+    var assigned=state.products.filter(function(p){return p.category===id;});
+    if(assigned.length){
+      if(typeof showToast==="function")showToast("Move the products out of this category before deleting it.");
+      return;
+    }
+
+    if(!confirm('Delete category "'+cat.name+'"?'))return;
+
+    state.productCategories=state.productCategories.filter(function(item){return item.id!==id;});
+    if(productManagerActiveCategory===id)productManagerActiveCategory="all";
+    state.activeProductCategory=productManagerActiveCategory;
+    renderProducts(productManagerActiveCategory);
+    renderProductManager();
+    pushHistory();
+    markUnsaved();
+    if(typeof showToast==="function")showToast("Category deleted.");
+  }
+
   function addProductManagerCategory(){
     var name = (productManagerCategoryInput && productManagerCategoryInput.value || "").trim();
     if(!name) return;
@@ -4600,6 +4629,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   $("#cpEditProductGuide").addEventListener("click",openProductGuideEditor);
   $("#ezProductGuideClose").addEventListener("click",closeProductGuideEditor);
   $("#ezProductGuideCancel").addEventListener("click",closeProductGuideEditor);
+  $("#ezProductGuideAdd").addEventListener("click",addProductGuideToDraft);
+  $("#ezProductGuideDelete").addEventListener("click",deleteProductGuideFromDraft);
   $("#ezProductGuideSave").addEventListener("click",saveProductGuideEditor);
   $("#ezProductGuideModal").addEventListener("click",function(e){if(e.target===productGuideModal)closeProductGuideEditor();});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"&&productGuideModal&&productGuideModal.style.display!=="none"){e.preventDefault();closeProductGuideEditor();}});
@@ -5113,111 +5144,248 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   function cloneProductGuideProfiles(){
     ensureProductGuideDataArchitecture();
     var out={};
+
     Object.keys(state.roastProfiles).forEach(function(key){
       var p=normalizeProductGuideRecord(state.roastProfiles[key],key);
-      out[key]={key:key,title:p.title,subtitle:p.subtitle,description:p.description,indicatorColor:p.indicatorColor,metrics:p.metrics.map(function(m){return {label:m.label,percentage:clampProductGuidePercent(m.percentage)};}),recommended:{title:p.recommended.title,rows:p.recommended.rows.map(function(row){return {label:row.label,value:row.value,icon:row.icon};})}};
+      out[key]={
+        key:key,title:p.title,subtitle:p.subtitle,description:p.description,
+        indicatorColor:currentProductGuideAccent(),
+        metrics:p.metrics.map(function(m){return {label:m.label,percentage:clampProductGuidePercent(m.percentage)};}),
+        recommended:{
+          title:p.recommended.title,
+          rows:p.recommended.rows.map(function(row){return {label:row.label,value:row.value,icon:row.icon};})
+        }
+      };
     });
     return out;
   }
 
   function productGuideDataSnapshot(){
-    return {version:PRODUCT_GUIDE_DATA_VERSION,activeKey:state.activeProductGuide||'ebooks',profiles:cloneProductGuideProfiles()};
+    return {
+      version:PRODUCT_GUIDE_DATA_VERSION,
+      activeKey:state.activeProductGuide||Object.keys(state.roastProfiles)[0]||'ebooks',
+      profiles:cloneProductGuideProfiles()
+    };
   }
 
   function restoreProductGuideData(saved){
     if(!saved||typeof saved!=='object')return;
+
     if(saved.profiles&&typeof saved.profiles==='object'){
-      Object.keys(saved.profiles).forEach(function(key){state.roastProfiles[key]=normalizeProductGuideRecord(saved.profiles[key],key);});
+      var next={};
+      Object.keys(saved.profiles).forEach(function(key){
+        next[key]=normalizeProductGuideRecord(saved.profiles[key],key);
+      });
+      state.roastProfiles=next;
     }
+
     ensureProductGuideDataArchitecture();
-    state.activeProductGuide=saved.activeKey&&state.roastProfiles[saved.activeKey]?saved.activeKey:'ebooks';
+    state.activeProductGuide=saved.activeKey&&state.roastProfiles[saved.activeKey]
+      ?saved.activeKey:(Object.keys(state.roastProfiles)[0]||'ebooks');
+
     syncProductGuideTabs(state.activeProductGuide);
+    renderRoastProfile(state.activeProductGuide);
   }
 
   function buildProductGuideEditor(){
     ensureProductGuideDataArchitecture();
+    if(!productGuideEditorDraft)productGuideEditorDraft=cloneProductGuideProfiles();
+
     var tabs=$("#ezProductGuideTabs"),content=$("#ezProductGuideEditorContent");
     if(!tabs||!content)return;
-    var active=productGuideEditorActiveKey||state.activeProductGuide||'ebooks';
-    var sourceProfiles=productGuideEditorDraft||cloneProductGuideProfiles();
+
+    var active=productGuideEditorActiveKey||Object.keys(productGuideEditorDraft)[0];
+    if(!productGuideEditorDraft[active])active=Object.keys(productGuideEditorDraft)[0];
+    productGuideEditorActiveKey=active;
+
     tabs.innerHTML='';
-    Object.keys(sourceProfiles).forEach(function(key){
-      var data=sourceProfiles[key],btn=document.createElement('button');
+    Object.keys(productGuideEditorDraft).forEach(function(key){
+      var data=productGuideEditorDraft[key],btn=document.createElement('button');
       btn.type='button';btn.textContent=data.title;btn.className=key===active?'active':'';
-      btn.addEventListener('click',function(){if(productGuideEditorDirty)saveProductGuideEditorToDraft();productGuideEditorActiveKey=key;productGuideEditorDirty=false;buildProductGuideEditor();});
+      btn.addEventListener('click',function(){
+        if(productGuideEditorDirty)saveProductGuideEditorToDraft();
+        productGuideEditorActiveKey=key;
+        productGuideEditorDirty=false;
+        buildProductGuideEditor();
+      });
       tabs.appendChild(btn);
     });
 
-    var p=normalizeProductGuideRecord(sourceProfiles[active],active);
+    var p=normalizeProductGuideRecord(productGuideEditorDraft[active],active);
     content.innerHTML='';
-    function textInput(value){var el=document.createElement('input');el.type='text';el.value=value==null?'':String(value);return el;}
-    function addField(grid,label,input,full){var holder=document.createElement('div');holder.className='guide-field'+(full?' full':'');var lab=document.createElement('label');lab.textContent=label;holder.appendChild(lab);holder.appendChild(input);grid.appendChild(holder);return input;}
 
-    var basic=document.createElement('div');basic.className='guide-section';basic.innerHTML='<div class="guide-section-title">Format Tab</div>';
+    function textInput(value){
+      var el=document.createElement('input');el.type='text';
+      el.value=value==null?'':String(value);return el;
+    }
+    function addField(grid,label,input,full){
+      var holder=document.createElement('div');holder.className='guide-field'+(full?' full':'');
+      var lab=document.createElement('label');lab.textContent=label;
+      holder.appendChild(lab);holder.appendChild(input);grid.appendChild(holder);return input;
+    }
+
+    var basic=document.createElement('div');basic.className='guide-section';
+    basic.innerHTML='<div class="guide-section-title">Format Tab</div>';
     var grid=document.createElement('div');grid.className='guide-grid';
+
     var title=textInput(p.title);title.id='ezPGTitleInput';
     var subtitle=textInput(p.subtitle);subtitle.id='ezPGSubtitleInput';
     var desc=document.createElement('textarea');desc.id='ezPGDescriptionInput';desc.value=p.description;
-    var color=document.createElement('input');color.type='color';color.id='ezPGIndicatorColorInput';color.value=/^#[0-9a-f]{6}$/i.test(p.indicatorColor)?p.indicatorColor:'#C87A4B';
-    addField(grid,'Format Name / Tab Title',title,false);addField(grid,'Tab Subtitle',subtitle,false);addField(grid,'Description',desc,true);addField(grid,'Indicator Color',color,false);
-    var help=document.createElement('div');help.className='guide-help';help.textContent='Controls the small indicator on the format tab.';grid.appendChild(help);
-    basic.appendChild(grid);content.appendChild(basic);
+    var color=document.createElement('input');color.type='color';color.id='ezPGIndicatorColorInput';
+    color.value=currentProductGuideAccent();color.disabled=true;
 
-    var metricSection=document.createElement('div');metricSection.className='guide-section';metricSection.innerHTML='<div class="guide-section-title">Percentage Gauges</div>';
+    addField(grid,'Format Name / Tab Title',title,false);
+    addField(grid,'Tab Subtitle',subtitle,false);
+    addField(grid,'Description',desc,true);
+    addField(grid,'Circle Color (follows Color Scheme)',color,false);
+
+    var help=document.createElement('div');help.className='guide-help';
+    help.textContent='Product Guide circles automatically use the active Customize Panel Color Scheme.';
+    grid.appendChild(help);basic.appendChild(grid);content.appendChild(basic);
+
+    var metricSection=document.createElement('div');metricSection.className='guide-section';
+    metricSection.innerHTML='<div class="guide-section-title">Percentage Gauges</div>';
     p.metrics.forEach(function(metric,index){
       var row=document.createElement('div');row.className='metric-row';
+
       var lp=document.createElement('div');lp.className='metric-pair';
       var ll=document.createElement('div');ll.className='metric-label';ll.textContent='Gauge Label';
-      var li=textInput(metric.label);li.id='ezPGMetricLabel'+(index+1);lp.appendChild(ll);lp.appendChild(li);
+      var li=textInput(metric.label);li.id='ezPGMetricLabel'+(index+1);
+      lp.appendChild(ll);lp.appendChild(li);
+
       var pp=document.createElement('div');pp.className='metric-pair';
       var pl=document.createElement('div');pl.className='metric-label';pl.textContent='%';
-      var pi=document.createElement('input');pi.type='number';pi.min='0';pi.max='100';pi.step='1';pi.value=clampProductGuidePercent(metric.percentage);pi.id='ezPGMetricPct'+(index+1);pp.appendChild(pl);pp.appendChild(pi);
+      var pi=document.createElement('input');pi.type='number';pi.min='0';pi.max='100';pi.step='1';
+      pi.value=clampProductGuidePercent(metric.percentage);pi.id='ezPGMetricPct'+(index+1);
+      pp.appendChild(pl);pp.appendChild(pi);
+
       var rp=document.createElement('div');rp.className='metric-pair';
-      var range=document.createElement('input');range.type='range';range.min='0';range.max='100';range.step='1';range.value=clampProductGuidePercent(metric.percentage);range.id='ezPGMetricRange'+(index+1);
-      var note=document.createElement('div');note.className='metric-note';note.textContent=range.value+'%';rp.appendChild(range);rp.appendChild(note);
-      range.addEventListener('input',function(){pi.value=range.value;note.textContent=range.value+'%';productGuideEditorDirty=true;});
-      pi.addEventListener('input',function(){var v=clampProductGuidePercent(pi.value);pi.value=v;range.value=v;note.textContent=v+'%';productGuideEditorDirty=true;});
+      var range=document.createElement('input');range.type='range';range.min='0';range.max='100';range.step='1';
+      range.value=clampProductGuidePercent(metric.percentage);range.id='ezPGMetricRange'+(index+1);
+      var note=document.createElement('div');note.className='metric-note';note.textContent=range.value+'%';
+      rp.appendChild(range);rp.appendChild(note);
+
+      range.addEventListener('input',function(){
+        pi.value=range.value;note.textContent=range.value+'%';productGuideEditorDirty=true;
+      });
+      pi.addEventListener('input',function(){
+        var v=clampProductGuidePercent(pi.value);
+        pi.value=v;range.value=v;note.textContent=v+'%';productGuideEditorDirty=true;
+      });
       li.addEventListener('input',function(){productGuideEditorDirty=true;});
+
       row.appendChild(lp);row.appendChild(pp);row.appendChild(rp);metricSection.appendChild(row);
     });
     content.appendChild(metricSection);
 
-    var rec=document.createElement('div');rec.className='guide-section';rec.innerHTML='<div class="guide-section-title">Recommended Format</div>';
+    var rec=document.createElement('div');rec.className='guide-section';
+    rec.innerHTML='<div class="guide-section-title">Recommended Format</div>';
     var rg=document.createElement('div');rg.className='guide-grid';
-    var rt=textInput(p.recommended.title);rt.id='ezPGRecommendedTitle';addField(rg,'Panel Heading',rt,true);rt.addEventListener('input',function(){productGuideEditorDirty=true;});
+
+    var rt=textInput(p.recommended.title);rt.id='ezPGRecommendedTitle';
+    addField(rg,'Panel Heading',rt,true);
+    rt.addEventListener('input',function(){productGuideEditorDirty=true;});
+
     p.recommended.rows.forEach(function(row,index){
       var rl=textInput(row.label);rl.id='ezPGRecLabel'+(index+1);
       var rv=textInput(row.value);rv.id='ezPGRecValue'+(index+1);
       var ri=textInput(row.icon);ri.id='ezPGRecIcon'+(index+1);ri.placeholder='Lucide icon name';
-      addField(rg,'Row '+(index+1)+' Label',rl,false);addField(rg,'Row '+(index+1)+' Value',rv,false);addField(rg,'Row '+(index+1)+' Icon',ri,false);
+      addField(rg,'Row '+(index+1)+' Label',rl,false);
+      addField(rg,'Row '+(index+1)+' Value',rv,false);
+      addField(rg,'Row '+(index+1)+' Icon',ri,false);
       [rl,rv,ri].forEach(function(el){el.addEventListener('input',function(){productGuideEditorDirty=true;});});
     });
+
     rec.appendChild(rg);content.appendChild(rec);
-    [title,subtitle,desc,color].forEach(function(el){el.addEventListener('input',function(){productGuideEditorDirty=true;});});
+    [title,subtitle,desc].forEach(function(el){el.addEventListener('input',function(){productGuideEditorDirty=true;});});
   }
 
   function saveProductGuideEditorToDraft(){
     if(!productGuideEditorActiveKey)return;
-    if(!productGuideEditorDraft) productGuideEditorDraft=cloneProductGuideProfiles();
+    if(!productGuideEditorDraft)productGuideEditorDraft=cloneProductGuideProfiles();
+
     var p=normalizeProductGuideRecord(productGuideEditorDraft[productGuideEditorActiveKey],productGuideEditorActiveKey);
-    function val(id){var el=document.getElementById(id);return el?String(el.value||'').trim():'';}
-    function pct(id){var el=document.getElementById(id);return clampProductGuidePercent(el?el.value:0);}
-    p.title=val('ezPGTitleInput')||p.title;p.subtitle=val('ezPGSubtitleInput');p.description=val('ezPGDescriptionInput');p.indicatorColor=val('ezPGIndicatorColorInput')||p.indicatorColor;
-    p.metrics=p.metrics.map(function(m,i){return {label:val('ezPGMetricLabel'+(i+1))||m.label,percentage:pct('ezPGMetricPct'+(i+1))};});
+    function val(id){
+      var el=document.getElementById(id);
+      return el?String(el.value||'').trim():'';
+    }
+    function pct(id){
+      var el=document.getElementById(id);
+      return clampProductGuidePercent(el?el.value:0);
+    }
+
+    p.title=val('ezPGTitleInput')||p.title;
+    p.subtitle=val('ezPGSubtitleInput');
+    p.description=val('ezPGDescriptionInput');
+    p.indicatorColor=currentProductGuideAccent();
+    p.metrics=p.metrics.map(function(m,i){
+      return {label:val('ezPGMetricLabel'+(i+1))||m.label,percentage:pct('ezPGMetricPct'+(i+1))};
+    });
     p.recommended.title=val('ezPGRecommendedTitle')||p.recommended.title;
-    p.recommended.rows=p.recommended.rows.map(function(row,i){return {label:val('ezPGRecLabel'+(i+1))||row.label,value:val('ezPGRecValue'+(i+1)),icon:val('ezPGRecIcon'+(i+1))||row.icon};});
+    p.recommended.rows=p.recommended.rows.map(function(row,i){
+      return {
+        label:val('ezPGRecLabel'+(i+1))||row.label,
+        value:val('ezPGRecValue'+(i+1)),
+        icon:val('ezPGRecIcon'+(i+1))||row.icon
+      };
+    });
+
     productGuideEditorDraft[productGuideEditorActiveKey]=normalizeProductGuideRecord(p,productGuideEditorActiveKey);
+  }
+
+  function nextProductGuideKey(profiles){
+    var i=1,key='guide';
+    while(profiles[key]){i++;key='guide-'+i;}
+    return key;
+  }
+
+  function addProductGuideToDraft(){
+    if(!productGuideEditorDraft)productGuideEditorDraft=cloneProductGuideProfiles();
+    if(productGuideEditorDirty)saveProductGuideEditorToDraft();
+
+    var key=nextProductGuideKey(productGuideEditorDraft);
+    var index=Object.keys(productGuideEditorDraft).length;
+    productGuideEditorDraft[key]=makeDefaultProductGuideProfile(key,index);
+    productGuideEditorActiveKey=key;
+    productGuideEditorDirty=false;
+    buildProductGuideEditor();
+
+    var titleInput=document.getElementById('ezPGTitleInput');
+    if(titleInput)titleInput.focus();
+  }
+
+  function deleteProductGuideFromDraft(){
+    if(!productGuideEditorDraft)productGuideEditorDraft=cloneProductGuideProfiles();
+    if(productGuideEditorDirty)saveProductGuideEditorToDraft();
+
+    var keys=Object.keys(productGuideEditorDraft);
+    if(keys.length<=1){
+      if(typeof showToast==='function')showToast('Keep at least one Product Guide.');
+      return;
+    }
+
+    var key=productGuideEditorActiveKey||keys[0];
+    var data=productGuideEditorDraft[key];
+    if(!data)return;
+    if(!confirm('Delete "'+(data.title||'Product Guide')+'"? This cannot be undone after Save Product Guide.'))return;
+
+    delete productGuideEditorDraft[key];
+    var remaining=Object.keys(productGuideEditorDraft);
+    productGuideEditorActiveKey=remaining[0]||'';
+    productGuideEditorDirty=false;
+    buildProductGuideEditor();
   }
 
   function openProductGuideEditor(){
     ensureProductGuideDataArchitecture();
-    productGuideEditorActiveKey=state.activeProductGuide||'ebooks';
+    productGuideEditorActiveKey=state.activeProductGuide||Object.keys(state.roastProfiles)[0];
     productGuideEditorDirty=false;
     productGuideEditorDraft=cloneProductGuideProfiles();
     buildProductGuideEditor();
     productGuideModal.style.display='flex';
     productGuideModal.setAttribute('aria-hidden','false');
   }
+
   function closeProductGuideEditor(){
     if(!productGuideModal)return;
     productGuideModal.style.display='none';
@@ -5225,14 +5393,26 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     productGuideEditorDirty=false;
     productGuideEditorDraft=null;
   }
+
   function saveProductGuideEditor(){
     if(productGuideEditorDirty)saveProductGuideEditorToDraft();
+
+    var nextProfiles={};
     if(productGuideEditorDraft){
       Object.keys(productGuideEditorDraft).forEach(function(key){
-        state.roastProfiles[key]=normalizeProductGuideRecord(productGuideEditorDraft[key],key);
+        nextProfiles[key]=normalizeProductGuideRecord(productGuideEditorDraft[key],key);
       });
     }
-    state.activeProductGuide=productGuideEditorActiveKey||'ebooks';
+
+    if(!Object.keys(nextProfiles).length){
+      if(typeof showToast==='function')showToast('Keep at least one Product Guide.');
+      return;
+    }
+
+    state.roastProfiles=nextProfiles;
+    state.activeProductGuide=productGuideEditorActiveKey&&state.roastProfiles[productGuideEditorActiveKey]
+      ?productGuideEditorActiveKey:Object.keys(state.roastProfiles)[0];
+
     renderRoastProfile(state.activeProductGuide);
     syncProductGuideTabs(state.activeProductGuide);
     pushHistory();
@@ -5266,20 +5446,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   }
 
   function rebindRestoredHeader(){
-    var mobileBtn = document.getElementById("mobile-menu-btn");
-    var mobileMenu = document.getElementById("mobile-menu");
-    if(mobileBtn && mobileMenu && !mobileBtn.getAttribute("data-ez-bound")){
-      mobileBtn.addEventListener("click", function(){ mobileMenu.classList.toggle("hidden"); });
-      mobileBtn.setAttribute("data-ez-bound", "true");
-    }
-    document.querySelectorAll(".mobile-nav-link").forEach(function(link){
-      if(link.getAttribute("data-ez-bound")) return;
-      link.addEventListener("click", function(){
-        var menu = document.getElementById("mobile-menu");
-        if(menu) menu.classList.add("hidden");
-      });
-      link.setAttribute("data-ez-bound", "true");
-    });
+    var mobileMenu=document.getElementById("mobile-menu");
+    if(mobileMenu&&window.innerWidth>=1100)mobileMenu.classList.add("hidden");
   }
 
   function restoreSnapshot(snap){
