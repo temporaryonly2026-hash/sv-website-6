@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>SOLACE — Digital Products &amp; E-books</title>
+<title>SOLACE</title>
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -2776,8 +2776,12 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
     <div class="cp-group" style="margin-bottom:10px;">
       <label>Site Name</label>
-      <p class="cp-note" style="margin:4px 0 8px;">Used for the browser tab title, site accessibility labels, and the footer copyright name.</p>
+      <p class="cp-note" style="margin:4px 0 8px;">Used for the browser tab title, site accessibility labels, and the footer copyright name. The browser title descriptor is configurable below.</p>
       <input type="text" id="cpSiteName" value="SOLACE" placeholder="e.g. Your Brand">
+      <div style="height:8px;"></div>
+      <label for="cpSiteDescriptor">Site Descriptor</label>
+      <p class="cp-note" style="margin:4px 0 8px;">Shown after the site name in the browser tab title. This is fully editable and is no longer hardcoded.</p>
+      <input type="text" id="cpSiteDescriptor" value="Digital Products &amp; E-books" placeholder="e.g. Digital Products &amp; E-books">
     </div>
 
     <div class="cp-group" style="margin-bottom:10px;">
@@ -5246,7 +5250,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       legalPages: cloneLegalContentMap(),
       productData: productDataSnapshot(),
       productGuideData: productGuideDataSnapshot(),
-      siteName: normalizeSiteName($("#cpSiteName") ? $("#cpSiteName").value : "SOLACE")
+      siteName: normalizeSiteName($("#cpSiteName") ? $("#cpSiteName").value : "SOLACE"),
+      siteDescriptor: normalizeSiteDescriptor($("#cpSiteDescriptor") ? $("#cpSiteDescriptor").value : "Digital Products & E-books")
     };
   }
 
@@ -5306,8 +5311,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     // data-driven category tabs are synchronized with the restored page.
     if(snap.productData) restoreProductData(snap.productData);
     if(snap.productGuideData) restoreProductGuideData(snap.productGuideData);
-    applySiteName(snap.siteName || "SOLACE");
+    applySiteName(snap.siteName || "SOLACE", snap.siteDescriptor || "Digital Products & E-books");
     if($("#cpSiteName")) $("#cpSiteName").value = normalizeSiteName(snap.siteName || "SOLACE");
+    if($("#cpSiteDescriptor")) $("#cpSiteDescriptor").value = normalizeSiteDescriptor(snap.siteDescriptor || "Digital Products & E-books");
     if(typeof renderProductManager === "function" && productManagerModal && productManagerModal.style.display !== "none") renderProductManager();
 
     $all(".editable-text").forEach(function(el){ el.setAttribute("contenteditable", editOn ? "true" : "false"); });
@@ -5407,7 +5413,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       // the saved settings without losing the user's effects.
       customCode: customEffectsCode(customEffects),
       ownerEmail: $("#cpOwnerEmail").value,
-      siteName: $("#cpSiteName").value.trim() || "SOLACE"
+      siteName: $("#cpSiteName").value.trim() || "SOLACE",
+      siteDescriptor: $("#cpSiteDescriptor").value.trim() || "Digital Products & E-books"
     };
   }
   function applySettings(s){
@@ -5432,8 +5439,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     injectCustomEffects(customEffects);
     updateLastAppliedCustomCode();
     if(s.ownerEmail){ $("#cpOwnerEmail").value = s.ownerEmail; }
-    applySiteName(s.siteName || "SOLACE");
+    applySiteName(s.siteName || "SOLACE", s.siteDescriptor || "Digital Products & E-books");
     if($("#cpSiteName")) $("#cpSiteName").value = normalizeSiteName(s.siteName || "SOLACE");
+    if($("#cpSiteDescriptor")) $("#cpSiteDescriptor").value = normalizeSiteDescriptor(s.siteDescriptor || "Digital Products & E-books");
     if(s.stats){
       Object.keys(s.stats).forEach(function(key){
         var stat = document.querySelector('.stat[data-recolor-key="' + key.replace(/"/g, '\\"') + '"]');
@@ -5464,10 +5472,14 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     var name = String(value == null ? "" : value).trim();
     return name || "SOLACE";
   }
-  function applySiteName(value){
+  function normalizeSiteDescriptor(value){
+    return String(value == null ? "" : value).trim();
+  }
+  function applySiteName(value, descriptorValue){
     var siteName = normalizeSiteName(value);
+    var descriptor = normalizeSiteDescriptor(descriptorValue == null ? ($("#cpSiteDescriptor") ? $("#cpSiteDescriptor").value : "Digital Products & E-books") : descriptorValue);
     var titleEl = document.querySelector("title");
-    if(titleEl) titleEl.textContent = siteName + " — Digital Products & E-books";
+    if(titleEl) titleEl.textContent = descriptor ? (siteName + " — " + descriptor) : siteName;
     document.documentElement.setAttribute("data-site-name", siteName);
     window.SITE_NAME = siteName;
 
@@ -5491,10 +5503,18 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   }
 
   var siteNameInput = $("#cpSiteName");
+  var siteDescriptorInput = $("#cpSiteDescriptor");
   if(siteNameInput){
     siteNameInput.value = normalizeSiteName(siteNameInput.value);
     siteNameInput.addEventListener("input", function(){
-      applySiteName(siteNameInput.value);
+      applySiteName(siteNameInput.value, siteDescriptorInput ? siteDescriptorInput.value : "Digital Products & E-books");
+      markUnsaved();
+    });
+  }
+  if(siteDescriptorInput){
+    siteDescriptorInput.value = normalizeSiteDescriptor(siteDescriptorInput.value || "Digital Products & E-books");
+    siteDescriptorInput.addEventListener("input", function(){
+      applySiteName(siteNameInput ? siteNameInput.value : "SOLACE", siteDescriptorInput.value);
       markUnsaved();
     });
   }
@@ -5703,7 +5723,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     viewOnly = urlFlags.get("live") === "1" || queryFlags.get("live") === "1";
     if(viewOnly) body.classList.add("ez-view-only");
     setEditMode(false);
-    applySiteName($("#cpSiteName") ? $("#cpSiteName").value : "SOLACE");
+    applySiteName($("#cpSiteName") ? $("#cpSiteName").value : "SOLACE", $("#cpSiteDescriptor") ? $("#cpSiteDescriptor").value : "Digital Products & E-books");
     ensurePageElementIds();
     ensureSolaceEditorTargets();
     if(typeof ensureProductGuideDataArchitecture==="function") ensureProductGuideDataArchitecture();
