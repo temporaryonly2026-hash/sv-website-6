@@ -1780,13 +1780,17 @@ body.ez-edit-on .ez-add-btn{display:flex;}
             var uses=['Read at your pace','Edit when needed','Open & apply','Build & Organize'];
             var best=['Easy to revisit','Easy to customize','Action-friendly','Structured'];
             var includes=['PDF, EPUB, downloadable files','Downloadable tools + worksheets','Downloadable tools','Curated bundle'];
+            // This function is also called by the page's first script before the
+            // Customize Panel script defines currentProductGuideAccent(). Use a
+            // safe fallback during that early phase.
+            var guideAccent = typeof currentProductGuideAccent === 'function' ? currentProductGuideAccent() : '#C87A4B';
 
             return normalizeProductGuideRecord({
                 key:key,
                 title:index<4?titles[index]:'New Product Guide',
                 subtitle:index<4?subtitles[index]:'New Format',
                 description:index<4?descriptions[index]:'Add a description for this product guide.',
-                indicatorColor:currentProductGuideAccent(),
+                indicatorColor:guideAccent,
                 metrics:[
                     {label:'Depth',percentage:index<4?metricA[index]:50},
                     {label:'Depth',percentage:index<4?metricB[index]:50},
@@ -1813,11 +1817,12 @@ body.ez-edit-on .ez-add-btn{display:flex;}
                     state.roastProfiles[key]=makeDefaultProductGuideProfile(key,index);
                 });
             }else{
+                var guideAccent = typeof currentProductGuideAccent === 'function' ? currentProductGuideAccent() : '#C87A4B';
                 keys.forEach(function(key){
                     var current=state.roastProfiles[key]||{};
                     state.roastProfiles[key]=normalizeProductGuideRecord(Object.assign({},current,{
                         key:key,
-                        indicatorColor:currentProductGuideAccent()
+                        indicatorColor:guideAccent
                     }),key);
                 });
             }
