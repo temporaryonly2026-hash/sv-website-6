@@ -2775,6 +2775,12 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     <div class="cp-divider"></div>
 
     <div class="cp-group" style="margin-bottom:10px;">
+      <label>Site Name</label>
+      <p class="cp-note" style="margin:4px 0 8px;">Used for the browser tab title, site accessibility labels, and the footer copyright name.</p>
+      <input type="text" id="cpSiteName" value="SOLACE" placeholder="e.g. Your Brand">
+    </div>
+
+    <div class="cp-group" style="margin-bottom:10px;">
       <label>Owner Email (for inquiries)</label>
       <p class="cp-note" style="margin:4px 0 8px;">Where the contact form's "Send message" button opens Gmail Compose to. Also updates the "Prefer email?" link on the Contact section.</p>
       <input type="text" id="cpOwnerEmail" placeholder="e.g. hello@yourdomain.com">
@@ -5239,7 +5245,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       footerHTML: snapshotFooter(),
       legalPages: cloneLegalContentMap(),
       productData: productDataSnapshot(),
-      productGuideData: productGuideDataSnapshot()
+      productGuideData: productGuideDataSnapshot(),
+      siteName: normalizeSiteName($("#cpSiteName") ? $("#cpSiteName").value : "SOLACE")
     };
   }
 
@@ -5299,6 +5306,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     // data-driven category tabs are synchronized with the restored page.
     if(snap.productData) restoreProductData(snap.productData);
     if(snap.productGuideData) restoreProductGuideData(snap.productGuideData);
+    applySiteName(snap.siteName || "SOLACE");
+    if($("#cpSiteName")) $("#cpSiteName").value = normalizeSiteName(snap.siteName || "SOLACE");
     if(typeof renderProductManager === "function" && productManagerModal && productManagerModal.style.display !== "none") renderProductManager();
 
     $all(".editable-text").forEach(function(el){ el.setAttribute("contenteditable", editOn ? "true" : "false"); });
@@ -5397,7 +5406,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
       // Keep the legacy field synchronized so older versions can still read
       // the saved settings without losing the user's effects.
       customCode: customEffectsCode(customEffects),
-      ownerEmail: $("#cpOwnerEmail").value
+      ownerEmail: $("#cpOwnerEmail").value,
+      siteName: $("#cpSiteName").value.trim() || "SOLACE"
     };
   }
   function applySettings(s){
@@ -5422,6 +5432,8 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     injectCustomEffects(customEffects);
     updateLastAppliedCustomCode();
     if(s.ownerEmail){ $("#cpOwnerEmail").value = s.ownerEmail; }
+    applySiteName(s.siteName || "SOLACE");
+    if($("#cpSiteName")) $("#cpSiteName").value = normalizeSiteName(s.siteName || "SOLACE");
     if(s.stats){
       Object.keys(s.stats).forEach(function(key){
         var stat = document.querySelector('.stat[data-recolor-key="' + key.replace(/"/g, '\\"') + '"]');
@@ -5444,6 +5456,47 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     if(window.lucide && typeof window.lucide.createIcons === "function"){
       window.lucide.createIcons();
     }
+  }
+
+  // Site Name: one setting controls the browser title plus the site's
+  // accessibility labels and footer copyright name.
+  function normalizeSiteName(value){
+    var name = String(value == null ? "" : value).trim();
+    return name || "SOLACE";
+  }
+  function applySiteName(value){
+    var siteName = normalizeSiteName(value);
+    var titleEl = document.querySelector("title");
+    if(titleEl) titleEl.textContent = siteName + " — Digital Products & E-books";
+    document.documentElement.setAttribute("data-site-name", siteName);
+    window.SITE_NAME = siteName;
+
+    var logoLinks = ["#link0001", "#link0021"];
+    logoLinks.forEach(function(selector){
+      var link = document.querySelector(selector);
+      if(link) link.setAttribute("aria-label", siteName + " Digital");
+    });
+    ["#imageLogoNavbar", "#imageLogoFooter"].forEach(function(selector){
+      document.querySelectorAll(selector).forEach(function(img){
+        img.setAttribute("alt", siteName + " Digital");
+      });
+    });
+
+    var copyright = document.getElementById("text0057");
+    if(copyright){
+      var match = copyright.textContent.match(/©\s*(\d{4})/);
+      var year = match ? match[1] : String(new Date().getFullYear());
+      copyright.textContent = "© " + year + " " + siteName + " Digital. All Rights Reserved.";
+    }
+  }
+
+  var siteNameInput = $("#cpSiteName");
+  if(siteNameInput){
+    siteNameInput.value = normalizeSiteName(siteNameInput.value);
+    siteNameInput.addEventListener("input", function(){
+      applySiteName(siteNameInput.value);
+      markUnsaved();
+    });
   }
 
   // Owner Email: auto-detect from the existing "Prefer email?" mailto link
@@ -5650,6 +5703,7 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     viewOnly = urlFlags.get("live") === "1" || queryFlags.get("live") === "1";
     if(viewOnly) body.classList.add("ez-view-only");
     setEditMode(false);
+    applySiteName($("#cpSiteName") ? $("#cpSiteName").value : "SOLACE");
     ensurePageElementIds();
     ensureSolaceEditorTargets();
     if(typeof ensureProductGuideDataArchitecture==="function") ensureProductGuideDataArchitecture();
