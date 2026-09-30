@@ -515,6 +515,57 @@ body:not(.ez-edit-on) .item-actions{display:none !important;}
 #ezProductManagerModal .category-bar .category-delete:hover{
   background:rgba(226,131,111,.16);border-color:rgba(226,131,111,.62);
 }
+
+/* ---------- Category delete / product reassignment dialog ---------- */
+#ezProductCategoryDeleteModal{
+  display:none;position:fixed;inset:0;z-index:2147483460;
+  background:rgba(0,0,0,.66);align-items:center;justify-content:center;padding:20px;
+}
+#ezProductCategoryDeleteModal .box{
+  width:min(440px,94vw);display:flex;flex-direction:column;
+  background:#16181d;color:#f2f1ec;border:1px solid rgba(255,255,255,.14);
+  border-radius:12px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.5);
+  font-family:Inter,system-ui,sans-serif;
+}
+#ezProductCategoryDeleteModal .box-head{
+  padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.1);
+}
+#ezProductCategoryDeleteModal .box-title{font-size:14px;font-weight:700;}
+#ezProductCategoryDeleteModal .box-note{font-size:11.5px;color:#9a9d97;margin-top:5px;line-height:1.5;}
+#ezProductCategoryDeleteModal .box-body{padding:16px;}
+#ezProductCategoryDeleteModal .move-label{
+  display:block;color:#9a9d97;font-size:10.5px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;
+}
+#ezProductCategoryDeleteModal .move-select{
+  width:100%;padding:9px 10px;background:#0a0a0a;color:#f2f1ec;
+  border:1px solid rgba(255,255,255,.16);border-radius:8px;font-size:12px;
+}
+#ezProductCategoryDeleteModal .move-select:focus{outline:none;border-color:#c9a15a;}
+#ezProductCategoryDeleteModal .no-destination{
+  padding:11px 12px;border:1px dashed rgba(226,131,111,.35);border-radius:8px;
+  background:rgba(226,131,111,.06);color:#d8d9d3;font-size:11.5px;line-height:1.5;
+}
+#ezProductCategoryDeleteModal .box-foot{
+  display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;
+  border-top:1px solid rgba(255,255,255,.1);background:#16181d;
+}
+#ezProductCategoryDeleteModal .box-foot button{
+  padding:8px 13px;border-radius:7px;border:1px solid rgba(255,255,255,.16);
+  background:#1c1e23;color:#f2f1ec;font-size:11.5px;font-weight:600;cursor:pointer;
+}
+#ezProductCategoryDeleteModal .box-foot button:hover{background:#23262c;}
+#ezProductCategoryDeleteModal .box-foot .danger{
+  background:#c65f4b;border-color:#c65f4b;color:#fff;
+}
+#ezProductCategoryDeleteModal .box-foot .danger:hover{background:#b65240;}
+#ezProductCategoryDeleteModal .box-foot .danger:disabled{
+  opacity:.45;cursor:not-allowed;pointer-events:none;
+}
+@media (max-width:720px){
+  #ezProductCategoryDeleteModal{padding:12px;}
+  #ezProductCategoryDeleteModal .box{width:100%;max-width:440px;}
+}
 #ezProductManagerModal .category-add-row{
   display:flex;gap:7px;margin-top:10px;
 }
@@ -1484,7 +1535,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
                         return {
                             id: normalizeProductCategoryId(cat.id),
                             name: String(cat.name != null ? cat.name : cat.id),
-                            system: !!cat.system
+                            // "All Products" is the filter-only system entry.
+                            // Every real product category remains user-deletable.
+                            system: normalizeProductCategoryId(cat.id) === "all"
                         };
                     });
             }
@@ -2850,8 +2903,28 @@ body.ez-edit-on .ez-add-btn{display:flex;}
 
       <div class="product-list" id="ezProductManagerList"></div>
     </div>
-    <div class="manager-foot">
-      <div class="manager-foot-left">
+</div>
+
+<div id="ezProductCategoryDeleteModal" aria-hidden="true">
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="ezProductCategoryDeleteTitle">
+    <div class="box-head">
+      <div class="box-title" id="ezProductCategoryDeleteTitle">Delete Product Category</div>
+      <div class="box-note" id="ezProductCategoryDeleteNote"></div>
+    </div>
+    <div class="box-body">
+      <label class="move-label" for="ezProductCategoryMoveSelect">Move products to</label>
+      <select class="move-select" id="ezProductCategoryMoveSelect"></select>
+      <div class="no-destination" id="ezProductCategoryNoDestination" style="display:none;"></div>
+    </div>
+    <div class="box-foot">
+      <button type="button" id="ezProductCategoryDeleteCancel">Cancel</button>
+      <button type="button" class="danger" id="ezProductCategoryDeleteConfirm">Move Products &amp; Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="ezProductManagerModal" aria-hidden="true">
+
         <button type="button" id="ezProductManagerAddProduct">+ Add Product</button>
         <div class="manager-foot-note">Product cards show the product name only. Use Edit for the detailed settings editor.</div>
       </div>
@@ -4449,6 +4522,12 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   var productEditorSave = $("#ezProductEditorSave");
   var productEditorProductId = null;
   var productEditorIsNew = false;
+  var productCategoryDeleteModal = $("#ezProductCategoryDeleteModal");
+  var productCategoryDeleteNote = $("#ezProductCategoryDeleteNote");
+  var productCategoryMoveSelect = $("#ezProductCategoryMoveSelect");
+  var productCategoryNoDestination = $("#ezProductCategoryNoDestination");
+  var productCategoryDeleteCancel = $("#ezProductCategoryDeleteCancel");
+  var productCategoryDeleteConfirm = $("#ezProductCategoryDeleteConfirm");
 
   function renderProductEditorCategories(selectedId){
     ensureProductDataArchitecture();
@@ -4751,31 +4830,108 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     productManagerModal.setAttribute("aria-hidden","true");
   }
 
-  function deleteProductManagerCategory(id){
+  var pendingProductCategoryDeleteId = null;
+
+  function closeProductCategoryDeleteModal(){
+    pendingProductCategoryDeleteId = null;
+    if(!productCategoryDeleteModal) return;
+    productCategoryDeleteModal.style.display = "none";
+    productCategoryDeleteModal.setAttribute("aria-hidden","true");
+  }
+
+  function renderProductCategoryMoveOptions(sourceId){
+    if(!productCategoryMoveSelect) return [];
+    productCategoryMoveSelect.innerHTML = "";
+    var destinations = state.productCategories.filter(function(item){
+      return item.id !== "all" && item.id !== sourceId;
+    });
+    destinations.forEach(function(item){
+      var option = document.createElement("option");
+      option.value = item.id;
+      option.textContent = item.name;
+      productCategoryMoveSelect.appendChild(option);
+    });
+    return destinations;
+  }
+
+  function requestDeleteProductManagerCategory(id){
     ensureProductDataArchitecture();
     var cat=state.productCategories.find(function(item){return item.id===id;});
-    if(!cat)return;
-    if(cat.system){
-      if(typeof showToast==="function")showToast("Default categories cannot be deleted.");
+    if(!cat || cat.id === "all") return;
+
+    var assigned=state.products.filter(function(p){return p.category===id;});
+    if(!assigned.length){
+      if(!confirm('Delete category "'+cat.name+'"?')) return;
+      finalizeDeleteProductManagerCategory(id, null);
       return;
     }
+
+    pendingProductCategoryDeleteId = id;
+    var destinations = renderProductCategoryMoveOptions(id);
+
+    if(productCategoryDeleteNote){
+      productCategoryDeleteNote.textContent =
+        '"' + cat.name + '" contains ' + assigned.length + ' product' + (assigned.length === 1 ? '' : 's') +
+        '. Choose another category before deleting it.';
+    }
+
+    if(!destinations.length){
+      if(productCategoryMoveSelect) productCategoryMoveSelect.style.display = "none";
+      if(productCategoryNoDestination){
+        productCategoryNoDestination.style.display = "block";
+        productCategoryNoDestination.textContent =
+          "There is no other product category available. Create another category first, then you can move these products and delete this category.";
+      }
+      if(productCategoryDeleteConfirm) productCategoryDeleteConfirm.disabled = true;
+    } else {
+      if(productCategoryMoveSelect) productCategoryMoveSelect.style.display = "";
+      if(productCategoryNoDestination) productCategoryNoDestination.style.display = "none";
+      if(productCategoryDeleteConfirm) productCategoryDeleteConfirm.disabled = false;
+    }
+
+    if(productCategoryDeleteModal){
+      productCategoryDeleteModal.style.display = "flex";
+      productCategoryDeleteModal.setAttribute("aria-hidden","false");
+      if(productCategoryMoveSelect && destinations.length) productCategoryMoveSelect.focus();
+    }
+  }
+
+  function finalizeDeleteProductManagerCategory(id, destinationId){
+    ensureProductDataArchitecture();
+    var cat=state.productCategories.find(function(item){return item.id===id;});
+    if(!cat || cat.id === "all") return;
 
     var assigned=state.products.filter(function(p){return p.category===id;});
     if(assigned.length){
-      if(typeof showToast==="function")showToast("Move the products out of this category before deleting it.");
-      return;
+      if(!destinationId || destinationId === "all" || destinationId === id ||
+         !state.productCategories.some(function(item){return item.id===destinationId && item.id!==id && item.id!=="all";})){
+        return;
+      }
+      assigned.forEach(function(product){ product.category = destinationId; });
     }
 
-    if(!confirm('Delete category "'+cat.name+'"?'))return;
-
     state.productCategories=state.productCategories.filter(function(item){return item.id!==id;});
-    if(productManagerActiveCategory===id)productManagerActiveCategory="all";
-    state.activeProductCategory=productManagerActiveCategory;
-    renderProducts(productManagerActiveCategory);
+
+    var nextActive = productManagerActiveCategory;
+    if(nextActive === id) nextActive = assigned.length ? destinationId : "all";
+    if(!nextActive || !state.productCategories.some(function(item){return item.id===nextActive;})) nextActive = "all";
+
+    productManagerActiveCategory=nextActive;
+    state.activeProductCategory=nextActive;
+    renderProducts(nextActive);
     renderProductManager();
+    closeProductCategoryDeleteModal();
     pushHistory();
     markUnsaved();
-    if(typeof showToast==="function")showToast("Category deleted.");
+    if(typeof showToast==="function"){
+      showToast(assigned.length
+        ? assigned.length + " product" + (assigned.length === 1 ? "" : "s") + " moved and category deleted."
+        : "Category deleted.");
+    }
+  }
+
+  function deleteProductManagerCategory(id){
+    requestDeleteProductManagerCategory(id);
   }
 
   function addProductManagerCategory(){
@@ -4810,6 +4966,14 @@ body.ez-edit-on .ez-add-btn{display:flex;}
   $("#ezProductManagerDone").addEventListener("click", closeProductManager);
   $("#ezProductManagerAddProduct").addEventListener("click", function(){ openProductEditor(null); });
   $("#ezProductCategoryAdd").addEventListener("click", addProductManagerCategory);
+  productCategoryDeleteCancel.addEventListener("click", closeProductCategoryDeleteModal);
+  productCategoryDeleteConfirm.addEventListener("click", function(){
+    if(!pendingProductCategoryDeleteId || !productCategoryMoveSelect) return;
+    finalizeDeleteProductManagerCategory(pendingProductCategoryDeleteId, productCategoryMoveSelect.value);
+  });
+  productCategoryDeleteModal.addEventListener("click", function(e){
+    if(e.target === productCategoryDeleteModal) closeProductCategoryDeleteModal();
+  });
   $("#ezProductCategoryInput").addEventListener("keydown", function(e){
     if(e.key === "Enter"){ e.preventDefault(); addProductManagerCategory(); }
   });
@@ -4828,6 +4992,9 @@ body.ez-edit-on .ez-add-btn{display:flex;}
     if(productEditorModal && productEditorModal.style.display !== "none"){
       e.preventDefault();
       closeProductEditor();
+    } else if(productCategoryDeleteModal && productCategoryDeleteModal.style.display !== "none"){
+      e.preventDefault();
+      closeProductCategoryDeleteModal();
     } else if(productManagerModal && productManagerModal.style.display !== "none"){
       e.preventDefault();
       closeProductManager();
